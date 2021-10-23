@@ -6,3 +6,8 @@ name: DiamondMinigames
 description: Make creative minigames for your server.
 website: https://github.com/Swift-Strider/DiamondMinigames
 author: DiamondStrider1
+
+permissions:
+  diamondminigames.manage:
+    description: Gives the power to fully manage diamondminigames
+    default: op
