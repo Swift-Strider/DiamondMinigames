@@ -16,7 +16,7 @@ class CommandManager
     if (!PacketHooker::isRegistered()) {
       PacketHooker::register($plugin);
     }
-    
+
     $plugin->getServer()->getCommandMap()->registerAll("diamondminigames", [
       new MainCommand($plugin, "diamondminigames", "Manage DiamondMinigames"),
     ]);
