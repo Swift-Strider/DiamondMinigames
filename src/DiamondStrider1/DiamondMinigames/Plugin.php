@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames;
 
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
+use DiamondStrider1\DiamondMinigames\forms\FormSessions;
 use pocketmine\plugin\PluginBase;
 
 class Plugin extends PluginBase
@@ -24,5 +25,6 @@ class Plugin extends PluginBase
   public function onEnable()
   {
     CommandManager::init();
+    FormSessions::registerHandlers();
   }
 }

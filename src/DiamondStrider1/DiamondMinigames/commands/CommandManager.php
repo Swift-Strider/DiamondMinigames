@@ -18,7 +18,7 @@ class CommandManager
     }
 
     $plugin->getServer()->getCommandMap()->registerAll("diamondminigames", [
-      new MainCommand($plugin, "diamondminigames", "Manage DiamondMinigames"),
+      new MainCommand($plugin, "diamondminigames", "Open DiamondMinigames Management Form"),
     ]);
   }
 }
