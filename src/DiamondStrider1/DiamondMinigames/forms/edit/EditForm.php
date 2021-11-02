@@ -46,6 +46,9 @@ abstract class EditForm extends BaseForm
     FormSessions::sendPrevious($player);
   }
 
+  /**
+   * @param Closure $cb Signature - function($value): void {}
+   */
   public function onFinish(Closure $cb): void
   {
     Utils::validateCallableSignature(function ($value): void {
