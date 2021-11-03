@@ -1,2 +1,5 @@
 # Leave VS Code config out!
 .vscode
+# Used for phpstan analysis
+virions
+vendor
