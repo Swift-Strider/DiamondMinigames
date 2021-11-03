@@ -9,8 +9,10 @@ use DiamondStrider1\DiamondMinigames\forms\BaseForm;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
 use DomainException;
 use LogicException;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
+use TypeError;
 
 abstract class EditForm extends BaseForm
 {
@@ -38,6 +40,8 @@ abstract class EditForm extends BaseForm
     $this->default = $default;
   }
 
+  abstract protected function getDefaultAnnotations(): array;
+
   protected function setFinished($value, Player $player)
   {
     foreach ($this->closures as $cb) {
@@ -56,6 +60,35 @@ abstract class EditForm extends BaseForm
     $this->closures[] = $cb;
   }
 
+  protected function getTypedString($type, $value): string
+  {
+    if ($value === null) return "(UNFILLED)";
+    switch ($this->getAnnotation("element_type")) {
+      case "string":
+      case "boolean":
+      case "integer":
+      case "float":
+        return ((string) $value);
+      case "vector":
+        if (!($value instanceof Vector3)) {
+          throw new TypeError(sprintf(
+            "$type is vector, but $value is a non-vector (%s)",
+            (($vType = gettype($value)) === "object" ? get_class($value) : $vType)
+          ));
+        }
+        return sprintf(
+          "Vector(%f, %f, %f)",
+          $value->getX(), $value->getY(), $value->getZ()
+        );
+      case "list":
+        return "List [...]";
+      case "object":
+        return "Object {...}";
+      default:
+        throw new TypeError("Invalid Type $type");
+    }
+  }
+
   protected function getAnnotation(string $name): ?string
   {
     if (!array_key_exists($name, $this->getDefaultAnnotations())) {
@@ -69,9 +102,6 @@ abstract class EditForm extends BaseForm
   {
     return $this->default;
   }
-
-  abstract protected function getDefaultAnnotations(): array;
-
 
   /**
    * @param string $type

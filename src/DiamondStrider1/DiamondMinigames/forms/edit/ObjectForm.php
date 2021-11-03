@@ -91,33 +91,7 @@ class ObjectForm extends EditForm
     foreach ($this->formResult as $prop => $value) {
       $indexToPropName[] = $prop;
       $typeName = ucfirst($this->types[$prop]["type"]);
-      if ($value !== null) {
-        switch ($this->types[$prop]["type"]) {
-          case "string":
-          case "boolean":
-          case "integer":
-          case "float":
-            $valueString = (string) $value;
-            break;
-          case "vector":
-            /** @var Vector3 $value */
-            [$x, $y, $z] = [$value->getX(), $value->getY(), $value->getZ()];
-            $valueString = "Vector($x, $y, $z)";
-            break;
-          case "list":
-            $valueString = "List [...]";
-            break;
-          case "object":
-            $objectClass = $this->types[$prop]["annotations"]["class"];
-            $objectName = substr($objectClass, strrpos($objectClass, "\\", -1) + 1);
-            $valueString = "$objectName {...}";
-            break;
-          default:
-            $valueString = $typeName;
-        }
-      } else {
-        $valueString = "§c(UNFILLED)";
-      }
+      $valueString = $this->getTypedString($typeName, $value);
       $options[] = new MenuOption("§c" . ucfirst($prop) . "§r is $valueString");
     }
 
