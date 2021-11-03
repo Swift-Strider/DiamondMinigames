@@ -19,9 +19,11 @@ class ListRemoveForm extends EditForm
     "element_annotations" => "",
   ];
 
+  /** @var mixed[] */
   private array $formResult;
 
-  public function __construct(array $annotations = [], $default = null)
+  /** @param ?mixed[] $default */
+  public function __construct(array $annotations = [], array $default = null)
   {
     parent::__construct($annotations, $default);
     $this->formResult = $default ?? [];
@@ -32,12 +34,13 @@ class ListRemoveForm extends EditForm
     $options = [];
 
     foreach ($this->formResult as $value) {
-      $typeName = ucfirst($this->getAnnotation("element_type"));
+      $typeName = ucfirst($this->getAnnotationNonNull("element_type"));
       switch ($this->getAnnotation("element_type")) {
         case "string":
         case "boolean":
         case "integer":
         case "float":
+          /** @var string|bool|int|float $value */
           $options[] = new MenuOption((string) $value);
           break;
         case "vector":
@@ -58,8 +61,8 @@ class ListRemoveForm extends EditForm
     $option_count = count($options);
 
     $form = new MenuForm(
-      $this->getAnnotation("label"),
-      $this->getAnnotation("description"),
+      $this->getAnnotationNonNull("label"),
+      $this->getAnnotationNonNull("description"),
       $options,
       function (Player $player, int $selectedOption) use ($option_count): void {
         switch ($selectedOption) {
@@ -80,20 +83,7 @@ class ListRemoveForm extends EditForm
     return $form;
   }
 
-  private function getElementAnnotations(): array
-  {
-    $result = [];
-    $annotations = explode(", ", $this->getAnnotation("element_annotations"));
-    foreach ($annotations as $annotation) {
-      if (strpos($annotation, " => ") === false) {
-        continue;
-      }
-      [$name, $value] = explode(" => ", $annotation, 2);
-      $result[$name] = $value;
-    }
-    return $result;
-  }
-
+  /** @return string[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

@@ -18,8 +18,10 @@ class ListForm extends EditForm
     "element_annotations" => "",
   ];
 
+  /** @var mixed[] */
   private array $formResult;
 
+  /** @param ?mixed[] $default */
   public function __construct(array $annotations = [], $default = null)
   {
     parent::__construct($annotations, $default);
@@ -34,7 +36,7 @@ class ListForm extends EditForm
     ];
 
     foreach ($this->formResult as $index => $value) {
-      $typeName = ucfirst($this->getAnnotation("element_type"));
+      $typeName = ucfirst($this->getAnnotationNonNull("element_type"));
       $options[] = new MenuOption(sprintf(
         "§8#%d - §0%s",
         $index, $this->getTypedString($typeName, $value)
@@ -45,15 +47,15 @@ class ListForm extends EditForm
     $option_count = count($options);
 
     $form = new MenuForm(
-      $this->getAnnotation("label"),
-      $this->getAnnotation("description"),
+      $this->getAnnotationNonNull("label"),
+      $this->getAnnotationNonNull("description"),
       $options,
       function (Player $player, int $selectedOption) use ($option_count): void {
         $element_index = $selectedOption - 2;
         switch ($selectedOption) {
           case 0:
             $editor = EditForm::build(
-              $this->getAnnotation("element_type"),
+              $this->getAnnotationNonNull("element_type"),
               $this->getElementAnnotations()
             );
             $editor->onFinish(function ($value): void {
@@ -74,7 +76,7 @@ class ListForm extends EditForm
             break;
           default:
             $editor = EditForm::build(
-              $this->getAnnotation("element_type"),
+              $this->getAnnotationNonNull("element_type"),
               $this->getElementAnnotations(),
               $this->formResult[$element_index]
             );
@@ -93,10 +95,12 @@ class ListForm extends EditForm
     return $form;
   }
 
+  /** @return array<string, string> */
   private function getElementAnnotations(): array
   {
+    /** @var array<string, string> */
     $result = [];
-    $annotations = explode(", ", $this->getAnnotation("element_annotations"));
+    $annotations = explode(", ", $this->getAnnotationNonNull("element_annotations"));
     foreach ($annotations as $annotation) {
       if (strpos($annotation, "=") === false) {
         continue;
@@ -107,6 +111,7 @@ class ListForm extends EditForm
     return $result;
   }
 
+  /** @return string[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

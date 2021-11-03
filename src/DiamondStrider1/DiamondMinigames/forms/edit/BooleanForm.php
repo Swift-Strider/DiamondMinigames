@@ -19,10 +19,12 @@ class BooleanForm extends EditForm
 
   protected function createForm(Player $player): Form
   {
+    /** @var ?bool */
+    $defaultBoolean = $this->getDefault();
     $form = new CustomForm(
-      $this->getAnnotation("label"),
+      $this->getAnnotationNonNull("label"),
       [
-        new Toggle("toggle", $this->getAnnotation("description"), $this->getDefault() ?? false),
+        new Toggle("toggle", $this->getAnnotationNonNull("description"), $defaultBoolean ?? false),
       ],
       function (Player $player, CustomFormResponse $data): void {
         $this->setFinished($data->getBool("toggle"), $player);
@@ -35,6 +37,7 @@ class BooleanForm extends EditForm
     return $form;
   }
 
+  /** @return string[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

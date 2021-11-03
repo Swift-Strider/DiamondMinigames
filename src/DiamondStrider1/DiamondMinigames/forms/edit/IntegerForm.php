@@ -22,7 +22,9 @@ class IntegerForm extends EditForm
 
   protected function createForm(Player $player): Form
   {
-    $range = $this->getAnnotation("range");
+    $range = $this->getAnnotationNonNull("range");
+    /** @var ?int */
+    $defaultInteger = $this->getDefault();
     if ($range !== "any") {
       [$min, $max] = explode(" - ", $range, 2);
       $element = new Slider(
@@ -31,15 +33,15 @@ class IntegerForm extends EditForm
         (int) $min,
         (int) $max,
         1,
-        $this->getDefault() ?? (int) $min
+        $defaultInteger
       );
     } else {
-      $element = new Input("number", "", "", (string) $this->getDefault());
+      $element = new Input("number", "", "", (string) $defaultInteger);
     }
     $form = new CustomForm(
-      $this->getAnnotation("label"),
+      $this->getAnnotationNonNull("label"),
       [
-        new Label("description", $this->getAnnotation("description")),
+        new Label("description", $this->getAnnotationNonNull("description")),
         $element
       ],
       function (Player $player, CustomFormResponse $data): void {
@@ -58,6 +60,7 @@ class IntegerForm extends EditForm
     return $form;
   }
 
+  /** @return string[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

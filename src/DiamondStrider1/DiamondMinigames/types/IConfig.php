@@ -6,5 +6,8 @@ namespace DiamondStrider1\DiamondMinigames\types;
 
 interface IConfig
 {
+  /**
+   * @return array<string, mixed>
+   */
   public static function getDefaults(): array;
 }

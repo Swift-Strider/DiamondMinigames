@@ -22,7 +22,9 @@ class FloatForm extends EditForm
 
   protected function createForm(Player $player): Form
   {
-    $range = $this->getAnnotation("range");
+    /** @var ?float */
+    $defaultFloat = $this->getDefault();
+    $range = $this->getAnnotationNonNull("range");
     if ($range !== "any") {
       $step = 1;
       [$min, $max] = explode(" - ", $range, 2);
@@ -31,16 +33,16 @@ class FloatForm extends EditForm
       }
       $element = new Slider(
         "number", "",
-        (float) $min, (float) $max, $step,
-        $this->getDefault() ?? (float) $min
+        (float) $min, (float) $max, (float) $step,
+        $defaultFloat
       );
     } else {
-      $element = new Input("number", "", "", (string) $this->getDefault());
+      $element = new Input("number", "", "", (string) $defaultFloat);
     }
     $form = new CustomForm(
-      $this->getAnnotation("label"),
+      $this->getAnnotationNonNull("label"),
       [
-        new Label("description", $this->getAnnotation("description")),
+        new Label("description", $this->getAnnotationNonNull("description")),
         $element
       ],
       function (Player $player, CustomFormResponse $data): void {
@@ -59,6 +61,7 @@ class FloatForm extends EditForm
     return $form;
   }
 
+  /** @return string[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

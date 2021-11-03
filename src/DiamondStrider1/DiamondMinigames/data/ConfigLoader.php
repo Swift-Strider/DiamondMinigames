@@ -8,57 +8,41 @@ use DiamondStrider1\DiamondMinigames\Plugin;
 use DiamondStrider1\DiamondMinigames\types\IConfig;
 use DiamondStrider1\DiamondMinigames\types\IEditable;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionProperty;
 use TypeError;
 
 abstract class ConfigLoader
 {
-  public static function load(IEditable $config, array $rawData)
+  /** @param mixed[] $rawData */
+  public static function load(IEditable $config, array $rawData): void
   {
     $className = get_class($config);
-    try {
-      $rClass = new ReflectionClass($className);
-    } catch (ReflectionException) {
-      throw new TypeError("Class does not exist: $className");
-    }
+    $rClass = new ReflectionClass($className);
+
     $constructorParams = $rClass->getConstructor()?->getParameters();
-    if ($constructorParams && count($constructorParams) > 0) {
+    if ($constructorParams) {  // An empty array is falsy in php
       throw new TypeError("Class's constructor cannot take zero arguments: $className");
     }
 
-    if ($rClass->implementsInterface(IConfig::class)) {
-      $defaults = $rClass->getMethod("getDefaults")->invoke(null);
+    if ($config instanceof IConfig) {
+      $defaults = $config::getDefaults();
     }
 
-    foreach ($rClass->getProperties(ReflectionProperty::IS_PUBLIC) as $rProp) {
-      if ($rProp->isStatic()) continue;
+    foreach (self::getConfigInfo($config) as $info) {
+      $config_name = $info["annotations"]["config-name"];
+      $config_type = $info["annotations"]["config-type"];
+      $rProp = $info["prop_ref"];
 
-      preg_match_all(
-        '/@(\S+) ?(.*)\n?/',
-        str_replace("\r\n", "\n", $rProp->getDocComment()),
-        $matches
-      );
-      if (count($matches) < 3) continue;
-
-      $annotations = array_combine($matches[1], $matches[2]);
-      $requiredAnnotations = ["type", "config-name", "config-type"];
-
-      if (!$annotations) continue;
-      foreach ($requiredAnnotations as $req) {
-        if (!isset($annotations[$req])) continue 2;
+      if ($config_type === "object") {
+        continue;
       }
-
-      $config_name = $annotations["config-name"];
-      $config_type = $annotations["config-type"];
 
       if (
         isset($rawData[$config_name]) &&
-        ($config_type !== "object" &&
-          gettype($value = $rawData[$config_name]) === $config_type)
+        gettype($value = $rawData[$config_name]) === $config_type
       ) {
         $rProp->setValue($config, $value);
-      } else if ($config_type !== "object") {
+      } else {
         [$expected, $got] = [$config_type, gettype($rawData[$config_name] ?? null)];
         Plugin::getInstance()->getLogger()->debug(
           get_class($config) . ": " . $config_name .
@@ -71,26 +55,53 @@ abstract class ConfigLoader
     }
   }
 
+  /** @return array<string, mixed> */
   public static function save(IEditable $config): array
   {
     $className = get_class($config);
+    /** @var array<string, mixed> */
     $rawData = [];
-    try {
-      $rClass = new ReflectionClass($className);
-    } catch (ReflectionException) {
-      throw new TypeError("Class does not exist: $className");
-    }
+    $rClass = new ReflectionClass($className);
+
     $constructorParams = $rClass->getConstructor()?->getParameters();
-    if ($constructorParams && count($constructorParams) > 0) {
+    if ($constructorParams) { // PHP still considers empty arrays falsy
       throw new TypeError("Class's constructor cannot take zero arguments: $className");
     }
 
+    foreach (self::getConfigInfo($config) as $info) {
+      $config_name = $info["annotations"]["config-name"];
+      $rawData[$config_name] = $info["prop_ref"]->getValue($config);
+    }
+    return $rawData;
+  }
+
+  /**
+   * @return array<string, array{
+   *     prop_ref: ReflectionProperty,
+   *     annotations: (array{type: string,
+   *        config-name: string, config-type: string
+   *        } & array<string, string>)
+   *    }>
+   */
+  private static function getConfigInfo(IEditable $config): array
+  {
+    $className = get_class($config);
+    $rClass = new ReflectionClass($className);
+
+    $constructorParams = $rClass->getConstructor()?->getParameters();
+    if ($constructorParams) { // PHP still considers empty arrays falsy
+      throw new TypeError("Class's constructor cannot take zero arguments: $className");
+    }
+
+    $props = [];
     foreach ($rClass->getProperties(ReflectionProperty::IS_PUBLIC) as $rProp) {
       if ($rProp->isStatic()) continue;
+      $docComment = $rProp->getDocComment();
+      if (!$docComment) $docComment = "";
 
       preg_match_all(
         '/@(\S+) ?(.*)\n?/',
-        str_replace("\r\n", "\n", $rProp->getDocComment()),
+        str_replace("\r\n", "\n", $docComment),
         $matches
       );
       if (count($matches) < 3) continue;
@@ -99,13 +110,15 @@ abstract class ConfigLoader
       $requiredAnnotations = ["type", "config-name", "config-type"];
 
       if (!$annotations) continue;
+      $props[$rProp->getName()] = [];
       foreach ($requiredAnnotations as $req) {
-        if (!isset($annotations[$req])) continue 2;
+        if (!isset($annotations[$req])) {
+          unset($props[$rProp->getName()]);
+          continue 2;
+        }
       }
-
-      $config_name = $annotations["config-name"];
-      $rawData[$config_name] = $rProp->getValue($config);
+      $props[$rProp->getName()] = $annotations[$req];
     }
-    return $rawData;
+    return $props;
   }
 }

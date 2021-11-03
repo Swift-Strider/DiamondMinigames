@@ -30,7 +30,6 @@ class ManageForm extends BaseForm
           case 0:
             // TODO: minigame management form
           case 1:
-            $player->sendMessage((string) Plugin::getInstance()->getMainConfig());
             $editor = EditForm::build("object", [
               "label" => "Edit Configuration",
               "description" => "Changes are saved to config.yml immediately after the form is submitted.",

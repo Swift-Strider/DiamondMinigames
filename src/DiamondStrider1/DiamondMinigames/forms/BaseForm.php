@@ -16,7 +16,7 @@ abstract class BaseForm
     $player->sendForm($this->createForm($player));
   }
 
-  protected function openForm(Player $player, BaseForm $form)
+  protected function openForm(Player $player, BaseForm $form): void
   {
     FormSessions::pushPrevious($player, $this);
     $form->sendTo($player);

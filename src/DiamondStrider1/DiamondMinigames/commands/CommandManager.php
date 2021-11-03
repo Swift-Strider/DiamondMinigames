@@ -9,7 +9,7 @@ use DiamondStrider1\DiamondMinigames\Plugin;
 
 class CommandManager
 {
-  public static function init()
+  public static function init(): void
   {
     $plugin = Plugin::getInstance();
 

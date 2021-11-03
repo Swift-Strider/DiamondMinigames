@@ -33,13 +33,13 @@ class Plugin extends PluginBase
     $this->reloadPlugin();
   }
   
-  public function reloadPlugin()
+  public function reloadPlugin(): void
   {
     $this->reloadConfig();
     ConfigLoader::load($this->config, $this->getConfig()->getAll());
   }
 
-  public function saveMainConfig(MainConfig $mainConfig = null)
+  public function saveMainConfig(MainConfig $mainConfig = null): void
   {
     $this->config = $mainConfig ?? $this->config;
     

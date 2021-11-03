@@ -24,20 +24,20 @@ class VectorForm extends EditForm
 
   protected function createForm(Player $player): Form
   {
-    /** @var Vector3 $v */
-    $v = $this->getDefault();
-    if ($v) {
+    $defaultVector = $this->getDefault();
+    if ($defaultVector) {
+      /** @var Vector3 $defaultVector */
       [$x, $y, $z] = array_map(function ($value) {
         return rtrim(rtrim(number_format($value, 6), "0"), ".");
-      }, [$v->getX(), $v->getY(), $v->getZ()]);
+      }, [$defaultVector->getX(), $defaultVector->getY(), $defaultVector->getZ()]);
 
       $default = "($x, $y, $z)";
     }
     $form = new CustomForm(
-      $this->getAnnotation("label"),
+      $this->getAnnotationNonNull("label"),
       [
-        new Label("description", $this->getAnnotation("description") . ($this->error ? "\n\nMistyped Vector (Position)" : "")),
-        new Input("vector", "", "(3, 2, 1)", $this->error ? $this->formResult : ($v ? $default : "")),
+        new Label("description", $this->getAnnotationNonNull("description") . ($this->error ? "\n\nMistyped Vector (Position)" : "")),
+        new Input("vector", "", "(3, 2, 1)", $this->error ? $this->formResult : ($defaultVector ? $default : "")),
       ],
       function (Player $player, CustomFormResponse $data): void {
         $matches = [];
@@ -46,14 +46,14 @@ class VectorForm extends EditForm
           $data->getString("vector"),
           $matches
         );
-        $v = array_slice($matches, 1);
-        if (count($v) < 3) {
+        $rawVector = array_slice($matches, 1);
+        if (count($rawVector) < 3) {
           $this->error = true;
           $this->formResult = $data->getString("vector");
           $this->sendTo($player);
           return;
         }
-        $this->setFinished(new Vector3((float) $v[0], (float) $v[1], (float) $v[2]), $player);
+        $this->setFinished(new Vector3((float) $rawVector[0], (float) $rawVector[1], (float) $rawVector[2]), $player);
       },
       function (Player $player): void {
         $this->setFinished(null, $player);
@@ -63,6 +63,7 @@ class VectorForm extends EditForm
     return $form;
   }
 
+  /** @return mixed[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

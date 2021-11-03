@@ -9,10 +9,8 @@ use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
 use dktapps\pmforms\ModalForm;
 use pocketmine\form\Form;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionProperty;
 use TypeError;
 
@@ -25,40 +23,46 @@ class ObjectForm extends EditForm
   ];
 
   private bool $error = false;
+  /** @var array<string, mixed> */
   private array $formResult = [];
-  /** @var mixed[][]
-   * $propName => ["type" => "", "annotations" => []]
+  /**
+   * @var array<string, array{type: string, annotations: string[], prop_ref: ReflectionProperty}>
    */
   private array $types = [];
 
+  /**
+   * @param string[] $annotations
+   */
   public function __construct(array $annotations = [], IEditable $default = null)
   {
     parent::__construct($annotations, $default);
     $this->load($default);
   }
 
-  private function load(?IEditable $default)
+  private function load(?IEditable $default): void
   {
-    $className = $this->getAnnotation("class");
-    try {
-      $rClass = new ReflectionClass($className);
-    } catch (ReflectionException) {
-      throw new TypeError("Class does not exist: $className");
-    }
+    $className = $this->getAnnotationNonNull("class");
+
+    if (!class_exists($className)) throw new TypeError("Class does not exist: $className");
+    $rClass = new ReflectionClass($className);
+    
     if (!$rClass->implementsInterface(IEditable::class)) {
       throw new TypeError("Class is not IEditable: $className");
     }
+
     $constructorParams = $rClass->getConstructor()?->getParameters();
-    if ($constructorParams && count($constructorParams) > 0) {
+    if ($constructorParams) { // An empty array is falsy in php
       throw new TypeError("Class has a constructor with at least one parameter: $className");
     }
 
     foreach ($rClass->getProperties(ReflectionProperty::IS_PUBLIC) as $rProp) {
       if ($rProp->isStatic()) continue;
+      $docComment = $rProp->getDocComment();
+      if (!$docComment) $docComment = "";
 
       preg_match_all(
         '/@(\S+) ?(.*)\n?/',
-        str_replace("\r\n", "\n", $rProp->getDocComment()),
+        str_replace("\r\n", "\n", $docComment),
         $matches
       );
       if (count($matches) < 3) continue;
@@ -73,7 +77,8 @@ class ObjectForm extends EditForm
 
       $this->types[$rProp->getName()] = [
         "type" => $type,
-        "annotations" => $annotations
+        "annotations" => $annotations,
+        "prop_ref" => $rProp,
       ];
 
       if ($default) {
@@ -86,6 +91,7 @@ class ObjectForm extends EditForm
 
   protected function createForm(Player $player): Form
   {
+    /** @var string[] */
     $indexToPropName = [];
     $options = [];
     foreach ($this->formResult as $prop => $value) {
@@ -98,8 +104,8 @@ class ObjectForm extends EditForm
     $options[] = new MenuOption("Submit");
     $option_count = count($options);
     $className = substr(
-      $this->getAnnotation("class"),
-      strrpos($this->getAnnotation("class"), "\\", -1) + 1
+      $this->getAnnotationNonNull("class"),
+      strrpos($this->getAnnotationNonNull("class"), "\\", -1) + 1
     );
 
     $form = new MenuForm(
@@ -114,6 +120,7 @@ class ObjectForm extends EditForm
             $this->tryFinish($player);
             break;
           default:
+            /** @var string $prop */
             $editor = EditForm::build(
               $this->getPropType($prop),
               $this->getPropAnnotations($prop),
@@ -150,9 +157,15 @@ class ObjectForm extends EditForm
     return $this->types[$propName]["type"];
   }
 
+  /** @return string[] */
   private function getPropAnnotations(string $propName): array
   {
     return $this->types[$propName]["annotations"];
+  }
+
+  private function getPropReflection(string $propName): ReflectionProperty
+  {
+    return $this->types[$propName]["prop_ref"];
   }
 
   private function tryFinish(Player $player): void
@@ -165,11 +178,12 @@ class ObjectForm extends EditForm
         $this->sendTo($player);
         return;
       }
-      $object->{$prop} = $this->formResult[$prop];
+      $this->getPropReflection($prop)->setValue($object, $this->formResult[$prop]);
     }
     $this->setFinished($object, $player);
   }
 
+  /** @return mixed[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

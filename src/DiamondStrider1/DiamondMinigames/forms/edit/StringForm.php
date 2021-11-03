@@ -21,11 +21,13 @@ class StringForm extends EditForm
 
   protected function createForm(Player $player): Form
   {
+    /** @var ?string */
+    $defaultString = $this->getDefault();
     $form = new CustomForm(
-      $this->getAnnotation("label"),
+      $this->getAnnotationNonNull("label"),
       [
-        new Label("description", $this->getAnnotation("description")),
-        new Input("input", "", $this->getAnnotation("placeholder"), $this->getDefault() ?? ""),
+        new Label("description", $this->getAnnotationNonNull("description")),
+        new Input("input", "", $this->getAnnotationNonNull("placeholder"), $defaultString ?? ""),
       ],
       function (Player $player, CustomFormResponse $data): void {
         $this->setFinished($data->getString("input"), $player);
@@ -38,6 +40,7 @@ class StringForm extends EditForm
     return $form;
   }
 
+  /** @return string[] */
   protected function getDefaultAnnotations(): array
   {
     return self::DEFAULT_ANNOTATIONS;

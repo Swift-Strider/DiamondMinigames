@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\forms;
 
 use DiamondStrider1\DiamondMinigames\Plugin;
-use InvalidStateException;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -20,28 +19,28 @@ class FormSessions
   # Event Handlers
   #
 
-  public static function playerAdded(Player $player)
+  public static function playerAdded(Player $player): void
   {
     self::$playerSessions[$player->getRawUniqueId()] = new FormSessions;
   }
 
-  public static function playerRemoved(Player $player)
+  public static function playerRemoved(Player $player): void
   {
     unset(self::$playerSessions[$player->getRawUniqueId()]);
   }
 
-  public static function registerHandlers()
+  public static function registerHandlers(): void
   {
     $plugin = Plugin::getInstance();
     $plugin->getServer()->getPluginManager()->registerEvents(
       new class implements Listener
       {
-        public function onPlayerAdded(PlayerJoinEvent $ev)
+        public function onPlayerAdded(PlayerJoinEvent $ev): void
         {
           FormSessions::playerAdded($ev->getPlayer());
         }
 
-        public function onPlayerRemoved(PlayerQuitEvent $ev)
+        public function onPlayerRemoved(PlayerQuitEvent $ev): void
         {
           FormSessions::playerRemoved($ev->getPlayer());
         }
@@ -78,7 +77,7 @@ class FormSessions
     array_push($this->forms, $form);
   }
 
-  private function popForm(): BaseForm
+  private function popForm(): ?BaseForm
   {
     return array_pop($this->forms);
   }
