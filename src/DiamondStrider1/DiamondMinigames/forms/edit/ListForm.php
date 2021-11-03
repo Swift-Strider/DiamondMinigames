@@ -19,12 +19,12 @@ class ListForm extends EditForm
     "element_annotations" => "",
   ];
 
-  private array $editedValue;
+  private array $formResult;
 
   public function __construct(array $annotations = [], $default = null)
   {
     parent::__construct($annotations, $default);
-    $this->editedValue = $default ?? [];
+    $this->formResult = $default ?? [];
   }
 
   protected function createForm(Player $player): Form
@@ -34,7 +34,7 @@ class ListForm extends EditForm
       new MenuOption("Remove Element"),
     ];
 
-    foreach ($this->editedValue as $value) {
+    foreach ($this->formResult as $value) {
       $typeName = ucfirst($this->getAnnotation("element_type"));
       switch ($this->getAnnotation("element_type")) {
         case "string":
@@ -54,7 +54,7 @@ class ListForm extends EditForm
         case "object":
           $objectClass = $this->getElementAnnotations()["class"];
           $objectName = substr($objectClass, strrpos($objectClass, "\\", -1) + 1);
-          $options[] = new MenuOption("$objectName " . ($value === null ? "§4NOT FILLED" : "§cFILLED"));
+          $options[] = new MenuOption("$objectName");
           break;
         default:
           $options[] = new MenuOption($typeName);
@@ -78,35 +78,35 @@ class ListForm extends EditForm
             );
             $editor->onFinish(function ($value): void {
               if ($value === null) return;
-              $this->editedValue[] = $value;
+              $this->formResult[] = $value;
             });
             $this->openForm($player, $editor);
             break;
           case 1:
-            $editor = new ListRemoveForm($this->annotations, $this->editedValue);
+            $editor = new ListRemoveForm($this->annotations, $this->formResult);
             $editor->onFinish(function ($value): void {
-              $this->editedValue = $value;
+              $this->formResult = $value;
             });
             $this->openForm($player, $editor);
             break;
           case $option_count - 1:
-            $this->setFinished($this->editedValue, $player);
+            $this->setFinished($this->formResult, $player);
             break;
           default:
             $editor = EditForm::build(
               $this->getAnnotation("element_type"),
               $this->getElementAnnotations(),
-              $this->editedValue[$element_index]
+              $this->formResult[$element_index]
             );
             $editor->onFinish(function ($value) use ($element_index): void {
               if ($value === null) return;
-              $this->editedValue[$element_index] = $value;
+              $this->formResult[$element_index] = $value;
             });
             $this->openForm($player, $editor);
         }
       },
       function (Player $player): void {
-        $this->setFinished($this->editedValue, $player);
+        $this->setFinished($this->formResult, $player);
       }
     );
 

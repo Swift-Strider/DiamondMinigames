@@ -19,19 +19,19 @@ class ListRemoveForm extends EditForm
     "element_annotations" => "",
   ];
 
-  private array $editedValue;
+  private array $formResult;
 
   public function __construct(array $annotations = [], $default = null)
   {
     parent::__construct($annotations, $default);
-    $this->editedValue = $default ?? [];
+    $this->formResult = $default ?? [];
   }
 
   protected function createForm(Player $player): Form
   {
     $options = [];
 
-    foreach ($this->editedValue as $value) {
+    foreach ($this->formResult as $value) {
       $typeName = ucfirst($this->getAnnotation("element_type"));
       switch ($this->getAnnotation("element_type")) {
         case "string":
@@ -64,16 +64,16 @@ class ListRemoveForm extends EditForm
       function (Player $player, int $selectedOption) use ($option_count): void {
         switch ($selectedOption) {
           case $option_count - 1:
-            $this->setFinished($this->editedValue, $player);
+            $this->setFinished($this->formResult, $player);
             break;
           default:
-            unset($this->editedValue[$selectedOption]);
-            $this->editedValue = array_values($this->editedValue);
+            unset($this->formResult[$selectedOption]);
+            $this->formResult = array_values($this->formResult);
             $this->sendTo($player);
         }
       },
       function (Player $player): void {
-        $this->setFinished($this->editedValue, $player);
+        $this->setFinished($this->formResult, $player);
       }
     );
 

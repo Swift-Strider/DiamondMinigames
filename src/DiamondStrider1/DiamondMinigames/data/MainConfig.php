@@ -11,7 +11,7 @@ class MainConfig implements IEditable, IConfig
 {
   public static function getDefaults(): array
   {
-    static $defaults =  [];
+    static $defaults = [];
     return $defaults;
   }
 }

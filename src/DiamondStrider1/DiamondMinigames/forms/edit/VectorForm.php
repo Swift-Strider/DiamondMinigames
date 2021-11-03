@@ -20,7 +20,7 @@ class VectorForm extends EditForm
   ];
 
   private bool $error = false;
-  private string $editedValue = "";
+  private string $formResult = "";
 
   protected function createForm(Player $player): Form
   {
@@ -37,18 +37,19 @@ class VectorForm extends EditForm
       $this->getAnnotation("label"),
       [
         new Label("description", $this->getAnnotation("description") . ($this->error ? "\n\nMistyped Vector (Position)" : "")),
-        new Input("vector", "", "(3, 2, 1)", $this->error ? $this->editedValue : ($v ? $default : "")),
+        new Input("vector", "", "(3, 2, 1)", $this->error ? $this->formResult : ($v ? $default : "")),
       ],
       function (Player $player, CustomFormResponse $data): void {
         $matches = [];
         preg_match(
           '/(-?\d+(?:\.\d*)?) *, *(-?\d+(?:\.\d*)?) *, *(-?\d+(?:\.\d*)?)/',
-          $data->getString("vector"), $matches
+          $data->getString("vector"),
+          $matches
         );
         $v = array_slice($matches, 1);
         if (count($v) < 3) {
           $this->error = true;
-          $this->editedValue = $data->getString("vector");
+          $this->formResult = $data->getString("vector");
           $this->sendTo($player);
           return;
         }

@@ -25,7 +25,7 @@ class ObjectForm extends EditForm
   ];
 
   private bool $error = false;
-  private array $editedValue = [];
+  private array $formResult = [];
   /** @var mixed[][]
    * $propName => ["type" => "", "annotations" => []]
    */
@@ -55,7 +55,7 @@ class ObjectForm extends EditForm
 
     foreach ($rClass->getProperties(ReflectionProperty::IS_PUBLIC) as $rProp) {
       if ($rProp->isStatic()) continue;
-      
+
       preg_match_all(
         '/@(\S+) ?(.*)\n?/',
         str_replace("\r\n", "\n", $rProp->getDocComment()),
@@ -77,9 +77,9 @@ class ObjectForm extends EditForm
       ];
 
       if ($default) {
-        $this->editedValue[$rProp->getName()] = $rProp->getValue($default);
+        $this->formResult[$rProp->getName()] = $rProp->getValue($default);
       } else {
-        $this->editedValue[$rProp->getName()] = null;
+        $this->formResult[$rProp->getName()] = null;
       }
     }
   }
@@ -88,7 +88,7 @@ class ObjectForm extends EditForm
   {
     $indexToPropName = [];
     $options = [];
-    foreach ($this->editedValue as $prop => $value) {
+    foreach ($this->formResult as $prop => $value) {
       $indexToPropName[] = $prop;
       $typeName = ucfirst($this->types[$prop]["type"]);
       if ($value !== null) {
@@ -143,19 +143,20 @@ class ObjectForm extends EditForm
             $editor = EditForm::build(
               $this->getPropType($prop),
               $this->getPropAnnotations($prop),
-              $this->editedValue[$prop]
+              $this->formResult[$prop]
             );
             $editor->onFinish(function ($value) use ($prop): void {
               if ($value === null) return;
               $this->error = false;
-              $this->editedValue[$prop] = $value;
+              $this->formResult[$prop] = $value;
             });
             $this->openForm($player, $editor);
         }
       },
       function (Player $player): void {
         $player->sendForm(new ModalForm(
-          "Exiting?", "Are you sure you want to loose your progress.",
+          "Exiting?",
+          "Are you sure you want to loose your progress.",
           function (Player $player, bool $choice): void {
             if ($choice) {
               $this->setFinished(null, $player);
@@ -185,12 +186,12 @@ class ObjectForm extends EditForm
     $class = $this->getAnnotation("class");
     $object = new $class;
     foreach (array_keys($this->types) as $prop) {
-      if ($this->editedValue[$prop] === null) {
+      if ($this->formResult[$prop] === null) {
         $this->error = true;
         $this->sendTo($player);
         return;
       }
-      $object->{$prop} = $this->editedValue[$prop];
+      $object->{$prop} = $this->formResult[$prop];
     }
     $this->setFinished($object, $player);
   }

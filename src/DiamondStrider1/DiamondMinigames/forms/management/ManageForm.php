@@ -27,6 +27,8 @@ class ManageForm extends BaseForm
       function (Player $player, int $selectedOption): void {
         if (!$player->hasPermission("diamondminigames.manage")) return;
         switch ($selectedOption) {
+          case 0:
+            // TODO: minigame management form
           case 1:
             $player->sendMessage((string) Plugin::getInstance()->getMainConfig()->testVariableName);
             $editor = EditForm::build("object", [
