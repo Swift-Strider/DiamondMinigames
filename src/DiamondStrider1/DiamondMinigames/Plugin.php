@@ -43,8 +43,7 @@ class Plugin extends PluginBase
   {
     $this->config = $mainConfig ?? $this->config;
     
-    $config = $this->getConfig();
-    $config->setAll(ConfigLoader::save($this->config));
+    $this->getConfig()->setAll(ConfigLoader::unload($this->config));
     $this->saveConfig();
   }
 

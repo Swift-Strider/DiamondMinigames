@@ -56,7 +56,7 @@ abstract class ConfigLoader
   }
 
   /** @return array<string, mixed> */
-  public static function save(IEditable $config): array
+  public static function unload(IEditable $config): array
   {
     $className = get_class($config);
     /** @var array<string, mixed> */
