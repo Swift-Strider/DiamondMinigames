@@ -1,5 +1,5 @@
-# Leave VS Code config out!
-.vscode
-# Used for phpstan analysis
-virions
+# Project Git-Ignored files
+
+# phpstan.neon no longer acts like phpstan.neon.dist
+phpstan.neon
 vendor

@@ -1,4 +1,0 @@
-parameters:
-    level: max
-    scanDirectories:
-      - virions # virions can be found on poggit
