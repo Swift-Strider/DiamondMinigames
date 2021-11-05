@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Property DiamondStrider1\\\\DiamondMinigames\\\\forms\\\\edit\\\\EditForm\\:\\:\\$formTypes with generic class DiamondStrider1\\\\DiamondMinigames\\\\forms\\\\edit\\\\EditForm does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/forms/edit/EditForm.php
+
