@@ -30,7 +30,7 @@ class ObjectForm extends EditForm
   private bool $error = false;
   /** @var array<string, mixed> */
   private array $formResult = [];
-  /** @var class-string<IEditable&ISubtyped>[] */
+  /** @phpstan-var class-string<IEditable&ISubtyped>[] */
   private array $subtypes;
   /**
    * @var array<string, array{type: string, annotations: string[], prop_ref: ReflectionProperty}>
@@ -115,7 +115,9 @@ class ObjectForm extends EditForm
 
       foreach ($this->subtypes as $class) {
         $color = ($this->getDefault() instanceof $class) ? "§2" : "§g";
-        $options[] = new MenuOption($color . $class);
+        $slashPos = strrpos($class, "\\", -1);
+        $prettyName = substr($class, $slashPos ? $slashPos + 1 : 0);
+        $options[] = new MenuOption($color . $prettyName);
       }
 
       return new MenuForm(
@@ -132,10 +134,10 @@ class ObjectForm extends EditForm
            */
           $default = $this->getDefault();
           $editor = new self($annotations, $default);
-          $editor->onFinish(function (?IEditable $value) use ($player): void {
-            $this->setFinished($value, $player);
+          $editor->onFinish(function (?IEditable $value): void {
+            $this->setFinished($value); // Don't double navigate to previous
           });
-          $editor->sendTo($player);
+          $editor->sendTo($player); // Send Editor without FormSession history
         },
         function (Player $player): void {
           $this->setFinished(null, $player);

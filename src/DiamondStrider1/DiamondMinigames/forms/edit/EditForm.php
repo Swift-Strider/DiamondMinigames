@@ -60,12 +60,12 @@ abstract class EditForm extends BaseForm
   /**
    * @phpstan-param T $value
    */
-  protected function setFinished(mixed $value, Player $player): void
+  protected function setFinished(mixed $value, Player $player = null): void
   {
     foreach ($this->closures as $cb) {
       $cb($value);
     }
-    FormSessions::sendPrevious($player);
+    if ($player) FormSessions::sendPrevious($player);
   }
 
   /**
@@ -74,8 +74,6 @@ abstract class EditForm extends BaseForm
    */
   public function onFinish(Closure $cb): void
   {
-    Utils::validateCallableSignature(function ($value): void {
-    }, $cb);
     $this->closures[] = $cb;
   }
 
