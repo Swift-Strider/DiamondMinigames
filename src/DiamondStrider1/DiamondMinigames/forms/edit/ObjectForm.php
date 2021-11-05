@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\forms\edit;
 
 use DiamondStrider1\DiamondMinigames\types\IEditable;
+use DiamondStrider1\DiamondMinigames\types\ISubtyped;
 use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
 use dktapps\pmforms\ModalForm;
@@ -25,6 +26,8 @@ class ObjectForm extends EditForm
   private bool $error = false;
   /** @var array<string, mixed> */
   private array $formResult = [];
+  /** @var class-string<IEditable&ISubtyped>[] */
+  private array $subtypes;
   /**
    * @var array<string, array{type: string, annotations: string[], prop_ref: ReflectionProperty}>
    */
@@ -45,9 +48,17 @@ class ObjectForm extends EditForm
 
     if (!class_exists($className)) throw new TypeError("Class does not exist: $className");
     $rClass = new ReflectionClass($className);
-    
+
     if (!$rClass->implementsInterface(IEditable::class)) {
       throw new TypeError("Class is not IEditable: $className");
+    }
+
+    if ($rClass->isAbstract()) {
+      if (!$rClass->implementsInterface(ISubtyped::class)) {
+        throw new TypeError("Class is abstract and not ISubtyped");
+      }
+      /** @var class-string<IEditable&ISubtyped> $className */
+      $this->subtypes = $className::getSubtypes();
     }
 
     $constructorParams = $rClass->getConstructor()?->getParameters();
@@ -81,34 +92,59 @@ class ObjectForm extends EditForm
         "prop_ref" => $rProp,
       ];
 
-      if ($default) {
-        $this->formResult[$rProp->getName()] = $rProp->getValue($default);
-      } else {
-        $this->formResult[$rProp->getName()] = null;
-      }
+      $this->formResult[$rProp->getName()] = $default ? $rProp->getValue($default) : null;
     }
   }
 
   protected function createForm(Player $player): Form
   {
-    /** @var string[] */
-    $indexToPropName = [];
-    $options = [];
-    foreach ($this->formResult as $prop => $value) {
-      $indexToPropName[] = $prop;
-      $typeName = ucfirst($this->types[$prop]["type"]);
-      $valueString = $this->getTypedString($typeName, $value);
-      $options[] = new MenuOption("§c" . ucfirst($prop) . "§r is $valueString");
-    }
-
-    $options[] = new MenuOption("Submit");
-    $option_count = count($options);
     $className = substr(
       $this->getAnnotationNonNull("class"),
       strrpos($this->getAnnotationNonNull("class"), "\\", -1) + 1
     );
 
-    $form = new MenuForm(
+    if (isset($this->subtypes)) {
+      $options = [];
+
+      foreach ($this->subtypes as $class) {
+        $color = ($this->getDefault() instanceof $class) ? "§2" : "§g";
+        $options[] = new MenuOption($color . $class);
+      }
+
+      return new MenuForm(
+        $this->getAnnotation("label") ?? $className,
+        ($this->getAnnotation("description") ?? "Choose a version of $className"),
+        $options,
+        function (Player $player, int $selectedOption): void {
+          $annotations = $this->annotations;
+          $annotations["class"] = $this->subtypes[$selectedOption];
+          /** @var IEditable|null */
+          $default = $this->getDefault();
+          $editor = new self($annotations, $default);
+          $editor->onFinish(function ($value) use ($player): void {
+            $this->setFinished($value, $player);
+          });
+          $editor->sendTo($player);
+        },
+        function (Player $player): void {
+          $this->setFinished(null, $player);
+        }
+      );
+    }
+    /** @var string[] */
+    $indexToPropName = [];
+    $options = [];
+    foreach ($this->formResult as $prop => $value) {
+      $indexToPropName[] = $prop;
+      $type = $this->types[$prop]["type"];
+      $valueString = $this->getTypedString($type, $value);
+      $options[] = new MenuOption("§c" . ucfirst($prop) . "§r is $valueString");
+    }
+
+    $options[] = new MenuOption("Submit");
+    $option_count = count($options);
+
+    return new MenuForm(
       $this->getAnnotation("label") ?? $className,
       ($this->getAnnotation("description") ?? "Edit the $className") .
         ($this->error ? "\n§cYou haven't filled every property!" : ""),
@@ -148,8 +184,6 @@ class ObjectForm extends EditForm
         ));
       }
     );
-
-    return $form;
   }
 
   private function getPropType(string $propName): string

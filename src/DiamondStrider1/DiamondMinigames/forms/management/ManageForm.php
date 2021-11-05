@@ -29,6 +29,7 @@ class ManageForm extends BaseForm
         switch ($selectedOption) {
           case 0:
             // TODO: minigame management form
+            break;
           case 1:
             $editor = EditForm::build("object", [
               "label" => "Edit Configuration",
