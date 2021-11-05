@@ -10,6 +10,9 @@ use dktapps\pmforms\element\Toggle;
 use pocketmine\form\Form;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<bool|null>
+ */
 class BooleanForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [

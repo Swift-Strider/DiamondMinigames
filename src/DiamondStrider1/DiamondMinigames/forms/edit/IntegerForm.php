@@ -12,6 +12,9 @@ use dktapps\pmforms\element\Slider;
 use pocketmine\form\Form;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<int|null>
+ */
 class IntegerForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [
@@ -23,7 +26,6 @@ class IntegerForm extends EditForm
   protected function createForm(Player $player): Form
   {
     $range = $this->getAnnotationNonNull("range");
-    /** @var ?int */
     $defaultInteger = $this->getDefault();
     if ($range !== "any") {
       [$min, $max] = explode(" - ", $range, 2);

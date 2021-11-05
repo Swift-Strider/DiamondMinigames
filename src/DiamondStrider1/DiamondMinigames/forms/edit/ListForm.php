@@ -9,6 +9,9 @@ use dktapps\pmforms\MenuOption;
 use pocketmine\form\Form;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<array<int, mixed>>
+ */
 class ListForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [
@@ -20,9 +23,11 @@ class ListForm extends EditForm
 
   /** @var mixed[] */
   private array $formResult;
-
-  /** @param ?mixed[] $default */
-  public function __construct(array $annotations = [], $default = null)
+  
+  /**
+   * @phpstan-param mixed[] $default
+   */
+  public function __construct(array $annotations = [], array $default = null)
   {
     parent::__construct($annotations, $default);
     $this->formResult = $default ?? [];

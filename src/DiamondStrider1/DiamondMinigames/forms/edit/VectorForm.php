@@ -12,6 +12,9 @@ use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<Vector3|null>
+ */
 class VectorForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [
@@ -26,7 +29,6 @@ class VectorForm extends EditForm
   {
     $defaultVector = $this->getDefault();
     if ($defaultVector) {
-      /** @var Vector3 $defaultVector */
       [$x, $y, $z] = array_map(function ($value) {
         return rtrim(rtrim(number_format($value, 6), "0"), ".");
       }, [$defaultVector->getX(), $defaultVector->getY(), $defaultVector->getZ()]);

@@ -14,10 +14,13 @@ use pocketmine\Player;
 use pocketmine\utils\Utils;
 use TypeError;
 
+/**
+ * @phpstan-template T
+ */
 abstract class EditForm extends BaseForm
 {
   const EDIT_NAMESPACE = "DiamondStrider1\\DiamondMinigames\\forms\\edit\\";
-  /** @var array<string, class-string<self>> */
+  /** @var array<string, class-string<self>>> */
   private static array $formTypes = [
     "list"     => self::EDIT_NAMESPACE . "ListForm",
     "object"   => self::EDIT_NAMESPACE . "ObjectForm",
@@ -30,13 +33,20 @@ abstract class EditForm extends BaseForm
 
   /** @var array<string, string> */
   protected array $annotations;
-  /** @var mixed */
+  /** 
+   * @var mixed
+   * @phpstan-var T
+   */
   protected $default;
-  /** @var Closure[] */
+  /** 
+   * @var Closure[]
+   * @phpstan-var (Closure(T): void)[]
+   */
   private array $closures = [];
 
   /**
    * @param string[] $annotations
+   * @phpstan-param T $default
    */
   public function __construct(array $annotations = [], mixed $default = null)
   {
@@ -47,6 +57,9 @@ abstract class EditForm extends BaseForm
   /** @return string[] */
   abstract protected function getDefaultAnnotations(): array;
 
+  /**
+   * @phpstan-param T $value
+   */
   protected function setFinished(mixed $value, Player $player): void
   {
     foreach ($this->closures as $cb) {
@@ -57,6 +70,7 @@ abstract class EditForm extends BaseForm
 
   /**
    * @param Closure $cb Signature - function($value): void {}
+   * @phpstan-param Closure(T): void $cb
    */
   public function onFinish(Closure $cb): void
   {
@@ -116,6 +130,9 @@ abstract class EditForm extends BaseForm
     return $this->annotations[$name] ?? $this->getDefaultAnnotations()[$name];
   }
 
+  /**
+   * @phpstan-return T|null
+   */
   protected function getDefault(): mixed
   {
     return $this->default;
@@ -126,6 +143,7 @@ abstract class EditForm extends BaseForm
    * @param string[] $annotations $name => $value
    * @param mixed $default
    * @throws DomainException when $type is not registered
+   * @return EditForm<mixed>
    */
   public static function build(string $type, array $annotations = [], $default = null): EditForm
   {

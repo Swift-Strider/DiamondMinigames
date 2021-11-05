@@ -11,6 +11,9 @@ use dktapps\pmforms\element\Label;
 use pocketmine\form\Form;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<string|null>
+ */
 class StringForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [

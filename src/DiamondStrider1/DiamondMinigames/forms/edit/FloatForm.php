@@ -12,6 +12,9 @@ use dktapps\pmforms\element\Slider;
 use pocketmine\form\Form;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<float|null>
+ */
 class FloatForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [

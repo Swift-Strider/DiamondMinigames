@@ -10,6 +10,9 @@ use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
+/**
+ * @extends EditForm<array<int, mixed>>
+ */
 class ListRemoveForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [

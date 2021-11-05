@@ -15,6 +15,10 @@ use ReflectionClass;
 use ReflectionProperty;
 use TypeError;
 
+/**
+ * @template T of IEditable
+ * @extends EditForm<T|null>
+ */
 class ObjectForm extends EditForm
 {
   const DEFAULT_ANNOTATIONS = [
@@ -35,15 +39,18 @@ class ObjectForm extends EditForm
 
   /**
    * @param string[] $annotations
+   * @phpstan-param array{class: class-string<T>}&array<string, string> $annotations
+   * @phpstan-param T $default
    */
-  public function __construct(array $annotations = [], IEditable $default = null)
+  public function __construct(array $annotations, IEditable $default = null)
   {
     parent::__construct($annotations, $default);
-    $this->load($default);
+    $this->load();
   }
 
-  private function load(?IEditable $default): void
+  private function load(): void
   {
+    $default = $this->getDefault();
     $className = $this->getAnnotationNonNull("class");
 
     if (!class_exists($className)) throw new TypeError("Class does not exist: $className");
@@ -117,11 +124,15 @@ class ObjectForm extends EditForm
         $options,
         function (Player $player, int $selectedOption): void {
           $annotations = $this->annotations;
+          /** @phpstan-var array{class: class-string<T>}&array<string, string> $annotations */
           $annotations["class"] = $this->subtypes[$selectedOption];
-          /** @var IEditable|null */
+          /** 
+           * @var IEditable|null
+           * @phpstan-var T|null
+           */
           $default = $this->getDefault();
           $editor = new self($annotations, $default);
-          $editor->onFinish(function ($value) use ($player): void {
+          $editor->onFinish(function (?IEditable $value) use ($player): void {
             $this->setFinished($value, $player);
           });
           $editor->sendTo($player);
@@ -204,7 +215,11 @@ class ObjectForm extends EditForm
 
   private function tryFinish(Player $player): void
   {
-    $class = $this->getAnnotation("class");
+    /** 
+     * @var class-string<self> $class
+     * @phpstan-var class-string<T> $class
+     */
+    $class = $this->getAnnotationNonNull("class");
     $object = new $class;
     foreach (array_keys($this->types) as $prop) {
       if ($this->formResult[$prop] === null) {
