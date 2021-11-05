@@ -68,7 +68,7 @@ abstract class EditForm extends BaseForm
   protected function getTypedString(string $type, mixed $value): string
   {
     if ($value === null) return "(UNFILLED)";
-    switch ($this->getAnnotation("element_type")) {
+    switch ($type) {
       case "string":
       case "boolean":
       case "integer":
