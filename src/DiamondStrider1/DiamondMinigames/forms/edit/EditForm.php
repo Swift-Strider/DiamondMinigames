@@ -11,7 +11,6 @@ use DomainException;
 use LogicException;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\utils\Utils;
 use TypeError;
 
 /**
@@ -82,10 +81,13 @@ abstract class EditForm extends BaseForm
     if ($value === null) return "(UNFILLED)";
     switch ($type) {
       case "string":
+        /** @var string $value */
+        return $value;
       case "boolean":
+        return $value ? "YES" : "NO";
       case "integer":
       case "float":
-        /** @var string|bool|int|float $value */
+        /** @var int|float $value */
         return (string) $value;
       case "vector":
         if (!($value instanceof Vector3)) {
