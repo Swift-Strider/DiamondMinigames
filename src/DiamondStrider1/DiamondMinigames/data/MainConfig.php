@@ -9,9 +9,16 @@ use DiamondStrider1\DiamondMinigames\types\IEditable;
 
 class MainConfig implements IEditable, IConfig
 {
+  /**
+   * @config-key log-the-time
+   * @type boolean
+   */
+  public bool $logTime;
   public static function getDefaults(): array
   {
-    static $defaults = [];
+    static $defaults = [
+      "log-the-time" => false
+    ];
     return $defaults;
   }
 }

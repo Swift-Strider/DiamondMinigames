@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames;
 
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
-use DiamondStrider1\DiamondMinigames\data\ConfigLoader;
 use DiamondStrider1\DiamondMinigames\data\MainConfig;
+use DiamondStrider1\DiamondMinigames\data\NeoConfig;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
 use pocketmine\plugin\PluginBase;
 
 class Plugin extends PluginBase
 {
   private static Plugin $instance;
-  private MainConfig $config;
+  /** @var NeoConfig<MainConfig> */
+  private NeoConfig $mainConfig;
 
   public static function getInstance(): self
   {
@@ -23,32 +24,31 @@ class Plugin extends PluginBase
   public function onLoad()
   {
     self::$instance = $this;
+    $dataFolder = $this->getDataFolder();
+    $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
   }
 
   public function onEnable()
   {
     CommandManager::init();
     FormSessions::registerHandlers();
-    $this->config = new MainConfig;
+    if ($this->getMainConfig()->logTime) $this->getLogger()->info("THE TIME IS " . date("h:i:s A") . " unix milis");
     $this->reloadPlugin();
   }
   
   public function reloadPlugin(): void
   {
-    $this->reloadConfig();
-    ConfigLoader::load($this->config, $this->getConfig()->getAll());
+    $this->mainConfig->getObject(true);
+    $this->mainConfig->saveData();
   }
 
-  public function saveMainConfig(MainConfig $mainConfig = null): void
+  public function setMainConfig(MainConfig $mainConfig): void
   {
-    $this->config = $mainConfig ?? $this->config;
-    
-    $this->getConfig()->setAll(ConfigLoader::unload($this->config));
-    $this->saveConfig();
+    $this->mainConfig->setObject($mainConfig);
   }
 
   public function getMainConfig(): MainConfig
   {
-    return $this->config;
+    return $this->mainConfig->getObject();
   }
 }
