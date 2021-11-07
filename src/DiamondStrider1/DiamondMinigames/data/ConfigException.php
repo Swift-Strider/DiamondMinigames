@@ -14,13 +14,30 @@ class ConfigException extends Exception
 
   /** @phpstan-param self::* $cause */
   public function __construct(
-    private int $cause
+    string $message,
+    private int $cause = -1,
   ) {
+    parent::__construct($message);
   }
 
   /** @phpstan-return self::* */
   public function getCause(): int
   {
     return $this->cause;
+  }
+
+  public static function unknownError(string $message): ConfigException
+  {
+    return new self($message, ConfigException::UNKNOWN_ERROR);
+  }
+
+  public static function typeMismatch(string $message): ConfigException
+  {
+    return new self($message, ConfigException::TYPE_MISMATCH);
+  }
+
+  public static function fileIsDirectory(string $message): ConfigException
+  {
+    return new self($message, ConfigException::FILE_IS_DIRECTORY);
   }
 }

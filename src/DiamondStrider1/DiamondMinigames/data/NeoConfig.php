@@ -29,8 +29,7 @@ class NeoConfig
     private ?string $base_offset = null,
   ) {
     if (is_dir($filename)) {
-      Plugin::getInstance()->getLogger()->emergency("YAML file is a directory: §c\"§7{$filename}§c\"");
-      throw new ConfigException(ConfigException::FILE_IS_DIRECTORY);
+      throw ConfigException::fileIsDirectory("YAML file is a directory: §c\"§7{$filename}§c\"");
     }
     if (!file_exists($filename)) {
       file_put_contents($filename, yaml_emit([])); // Initialize YAML file
@@ -79,10 +78,13 @@ class NeoConfig
 
     $contents = file_get_contents($this->filename);
     if ($contents === false) {
-      throw new ConfigException(ConfigException::UNKNOWN_ERROR);
+      throw ConfigException::unknownError("Could not load settings");
     }
-    $saveData = yaml_parse($contents);
-    assert(is_array($saveData), "YAML data must be in key-value pairs");
+
+    $saveData = yaml_parse($contents) ?? []; // Empty file default to empty array
+    if (!is_array($saveData)) {
+      throw ConfigException::unknownError("Settings must be in key-value pairs");
+    }
 
     $oldData = &$saveData;
     $offsets = explode(".", $this->base_offset);
@@ -100,10 +102,13 @@ class NeoConfig
   {
     $contents = file_get_contents($this->filename);
     if ($contents === false) {
-      throw new ConfigException(ConfigException::UNKNOWN_ERROR);
+      throw ConfigException::typeMismatch("Could not load settings");
     }
-    $saveData = yaml_parse($contents);
-    assert(is_array($saveData), "YAML data must be in key-value pairs");
+
+    $saveData = yaml_parse($contents) ?? []; // Empty file default to empty array
+    if (!is_array($saveData)) {
+      throw ConfigException::unknownError("Settings must be in key-value pairs");
+    }
 
     if ($this->base_offset !== null) {
       $offsets = explode(".", $this->base_offset);
@@ -186,7 +191,7 @@ class NeoConfig
         if (isset($defaults) && isset($defaults[$config_key])) {
           $rProp->setValue($config, $defaults[$config_key]);
         } else {
-          throw new ConfigException(ConfigException::TYPE_MISMATCH);
+          throw ConfigException::typeMismatch("Expected $expected but got $got at key $config_key");
         }
       }
     }
