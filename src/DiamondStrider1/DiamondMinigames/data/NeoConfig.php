@@ -73,7 +73,8 @@ class NeoConfig
   public function saveData(): void
   {
     if ($this->base_offset === null) {
-      file_put_contents($this->filename, yaml_emit($this->data));
+      $contents = $this->injectComments(yaml_emit($this->data));
+      file_put_contents($this->filename, $contents);
       return;
     }
 
@@ -95,7 +96,7 @@ class NeoConfig
     }
     $oldData = &$this->data;
 
-    file_put_contents($this->filename, yaml_emit($saveData));
+    file_put_contents($this->filename, yaml_emit($saveData)); // comments won't be injected
   }
 
   /** @return array<string, mixed> */
@@ -122,6 +123,26 @@ class NeoConfig
     return $saveData;
   }
 
+/**
+ * LIMITATION: Only works with top-level keys
+ */
+  private function injectComments(string $yaml): string
+  {
+    $lines = explode("\n", $yaml);
+    $newYaml = "";
+    foreach ($lines as $line) {
+      foreach (self::getConfigInfo($this->class) as $info) {
+        $key = $info["config_info"]["config-key"];
+        if (!str_starts_with($line, $key . ":")) continue;
+        if ($desc = $info["annotations"]["description"] ?? null) {
+          $newYaml .= "# $desc\n";
+        }
+      }
+      $newYaml .= "$line\n";
+    }
+    return $newYaml;
+  }
+
   /** @param mixed[] $rawData */
   private static function load(IEditable $config, array $rawData): void
   {
@@ -137,7 +158,7 @@ class NeoConfig
       $defaults = $config::getDefaults();
     }
 
-    foreach (self::getConfigInfo($config) as $info) {
+    foreach (self::getConfigInfo($className) as $info) {
       $annotations = $info["annotations"];
       $rProp = $info["prop_ref"];
       ["type" => $type, "config-key" => $config_key] = $info["config_info"];
@@ -223,7 +244,7 @@ class NeoConfig
       throw new TypeError("Class's constructor cannot take zero arguments: $className");
     }
 
-    foreach (self::getConfigInfo($config) as $info) {
+    foreach (self::getConfigInfo($className) as $info) {
       ["type" => $type, "config-key" => $config_key] = $info["config_info"];
       $annotations = $info["annotations"];
 
@@ -260,11 +281,11 @@ class NeoConfig
   }
 
   /**
+   * @phpstan-param class-string<IEditable> $className
    * @phpstan-return array<string, array{prop_ref: ReflectionProperty, annotations: array<string, string>, config_info: array{type: string, config-key: string}}>
    */
-  private static function getConfigInfo(IEditable $config): array
+  private static function getConfigInfo(string $className): array
   {
-    $className = get_class($config);
     $rClass = new ReflectionClass($className);
 
     $constructorParams = $rClass->getConstructor()?->getParameters();
