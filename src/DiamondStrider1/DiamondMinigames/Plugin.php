@@ -38,7 +38,6 @@ class Plugin extends PluginBase
   public function reloadPlugin(): void
   {
     $this->mainConfig->getObject(true);
-    $this->mainConfig->saveData();
   }
 
   public function setMainConfig(MainConfig $mainConfig): void
