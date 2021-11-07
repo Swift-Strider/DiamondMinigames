@@ -32,7 +32,6 @@ class Plugin extends PluginBase
   {
     CommandManager::init();
     FormSessions::registerHandlers();
-    if ($this->getMainConfig()->logTime) $this->getLogger()->info("THE TIME IS " . date("h:i:s A") . " unix milis");
     $this->reloadPlugin();
   }
   
