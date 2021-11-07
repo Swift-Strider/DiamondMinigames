@@ -7,6 +7,7 @@ namespace DiamondStrider1\DiamondMinigames\data;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use DiamondStrider1\DiamondMinigames\types\IConfig;
 use DiamondStrider1\DiamondMinigames\types\IEditable;
+use DiamondStrider1\DiamondMinigames\types\ISubtyped;
 use pocketmine\math\Vector3;
 use ReflectionClass;
 use ReflectionProperty;
@@ -156,6 +157,17 @@ class NeoConfig
               $rProp->getName() . " is not a valid class"
           );
         }
+
+        $rValue = new ReflectionClass($class);
+        if ($rValue->implementsInterface(ISubtyped::class) && $rValue->isAbstract()) {
+          if (!(is_array($value) && isset($value["subtype"]) && isset($value["options"]))) {
+            throw ConfigException::typeMismatch("Keys `subtype` and `options` expected at $config_key");
+          }
+          $subtypeName = $value["subtype"];
+          $class = $class::getSubtypes()[$subtypeName]; // Update $class to subtype
+          $value = $value["options"]; // Update $value to point to ISubtyped's data
+        }
+
         /** @phpstan-var class-string<IEditable> $class */
         try {
           $object = new $class;
@@ -163,11 +175,12 @@ class NeoConfig
         } catch (ConfigException $e) {
           if (!(isset($defaults) && isset($defaults[$config_key]))) {
             throw $e;
+          } else {
+            $object = $defaults[$config_key]; // Use default object when load fails
           }
         }
 
         $value = $object;
-        continue;
       }
 
       if ($type === "vector") {
@@ -212,6 +225,7 @@ class NeoConfig
 
     foreach (self::getConfigInfo($config) as $info) {
       ["type" => $type, "config-key" => $config_key] = $info["config_info"];
+      $annotations = $info["annotations"];
 
       $is_object = $type === "object";
       $is_vector = $type === "vector";
@@ -227,7 +241,17 @@ class NeoConfig
         if (!($value instanceof IEditable)) {
           throw new TypeError("Property {$rProp->getName()} is not a non-null instance of IEditable");
         }
-        $value = self::unload($value);
+        $data = self::unload($value);
+        if ($value instanceof ISubtyped) {
+          $subtypedClass = $annotations["class"];
+          $subtype = array_search(get_class($value), $subtypedClass::getSubtypes(), true);
+          $value = [
+            "subtype" => $subtype,
+            "options" => $data,
+          ];
+        } else {
+          $value = $data;
+        }
       }
 
       $rawData[$config_key] = $value;

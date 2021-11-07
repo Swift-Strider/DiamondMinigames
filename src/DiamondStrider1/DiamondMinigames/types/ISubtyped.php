@@ -7,6 +7,8 @@ namespace DiamondStrider1\DiamondMinigames\types;
 /** Exposes API to find subtypes of an abstract IEditable */
 interface ISubtyped
 {
-  /** @return class-string<IEditable&self>[] */
+  /** 
+   * @return array<string, class-string<IEditable&self>> An array indexed by human-readable strings
+   */
   public static function getSubtypes(): array;
 }
