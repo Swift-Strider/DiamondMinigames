@@ -31,7 +31,7 @@ class ObjectForm extends EditForm
   private ?string $error = null;
   /** @var array<string, mixed> */
   private array $formResult = [];
-  /** @phpstan-var class-string<IEditable&ISubtyped>[] */
+  /** @phpstan-var array<string, class-string<IEditable&ISubtyped>> */
   private array $subtypes;
   /**
    * @var array<string, array{type: string, annotations: string[], prop_ref: ReflectionProperty}>
@@ -115,8 +115,9 @@ class ObjectForm extends EditForm
 
     if (isset($this->subtypes)) {
       $options = [];
-
+      $subtypes = [];
       foreach ($this->subtypes as $class) {
+        $subtypes[] = $class; // Use numeral indexes instead of strings
         $color = ($this->getDefault() instanceof $class) ? "§2" : "§0";
         $slashPos = strrpos($class, "\\", -1);
         $prettyName = substr($class, $slashPos ? $slashPos + 1 : 0);
@@ -127,10 +128,10 @@ class ObjectForm extends EditForm
         $this->getAnnotation("label") ?? $className,
         ($this->getAnnotation("description") ?? "Choose a version of $className"),
         $options,
-        function (Player $player, int $selectedOption): void {
+        function (Player $player, int $selectedOption) use($subtypes): void {
           $annotations = $this->annotations;
           /** @phpstan-var array{class: class-string<T>}&array<string, string> $annotations */
-          $annotations["class"] = $this->subtypes[$selectedOption];
+          $annotations["class"] = $subtypes[$selectedOption];
           /** 
            * @var IEditable|null
            * @phpstan-var T|null
