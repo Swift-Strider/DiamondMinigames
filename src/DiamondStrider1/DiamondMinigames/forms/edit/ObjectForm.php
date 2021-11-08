@@ -240,6 +240,7 @@ class ObjectForm extends EditForm
       $this->sendTo($player);
       return;
     }
+    /** @phpstan-var T $object */
     $this->setFinished($object, $player);
   }
 
