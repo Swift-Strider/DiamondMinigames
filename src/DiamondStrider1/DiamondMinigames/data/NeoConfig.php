@@ -8,6 +8,7 @@ use DiamondStrider1\DiamondMinigames\Plugin;
 use DiamondStrider1\DiamondMinigames\types\IConfig;
 use DiamondStrider1\DiamondMinigames\types\IEditable;
 use DiamondStrider1\DiamondMinigames\types\ISubtyped;
+use DiamondStrider1\DiamondMinigames\types\IValid;
 use pocketmine\math\Vector3;
 use ReflectionClass;
 use ReflectionProperty;
@@ -52,7 +53,7 @@ class NeoConfig
     if ($constructorParams) {  // An empty array is falsy in php
       throw new TypeError("Class's constructor cannot take zero arguments: {$this->class}");
     }
-    
+
     $object = new $this->class;
     self::load($object, $this->fetchData());
     $this->setObject($object);
@@ -123,9 +124,9 @@ class NeoConfig
     return $saveData;
   }
 
-/**
- * LIMITATION: Only works with top-level keys
- */
+  /**
+   * LIMITATION: Only works with top-level keys
+   */
   private function injectComments(string $yaml): string
   {
     $lines = explode("\n", $yaml);
@@ -143,8 +144,12 @@ class NeoConfig
     return $newYaml;
   }
 
-  /** @param mixed[] $rawData */
-  private static function load(IEditable $config, array $rawData): void
+  /** 
+   * Mutates $config with values in $rawData
+   * @param IEditable $config
+   * @param mixed[] $rawData
+   */
+  private static function load(IEditable $config, array $rawData, bool $checkValid = true): void
   {
     $className = get_class($config);
     $rClass = new ReflectionClass($className);
@@ -229,6 +234,17 @@ class NeoConfig
         }
       }
     }
+
+    if ($checkValid && $config instanceof IValid && !($result = $config->isValid())->success()) {
+      if ($config instanceof IConfig) {
+        self::load($config, $config::getDefaults(), false);
+        if (!($result = $config->isValid())->success()) {
+          throw new TypeError("IConfig's defaults do not pass IValid checks: " . $className);
+        }
+      } else {
+        throw ConfigException::unknownError("Data failed validity check: " . $result->getError());
+      }
+    }
   }
 
   /** @return array<string, mixed> */
@@ -292,7 +308,7 @@ class NeoConfig
     if ($constructorParams) { // PHP still considers empty arrays falsy
       throw new TypeError("Class's constructor cannot take zero arguments: $className");
     }
-    
+
     $props = [];
     foreach ($rClass->getProperties(ReflectionProperty::IS_PUBLIC) as $rProp) {
       if ($rProp->isStatic()) continue;
@@ -311,7 +327,7 @@ class NeoConfig
       $requiredAnnotations = ["type", "config-key"];
 
       if (!$annotations) continue;
-      
+
       foreach ($requiredAnnotations as $req) {
         if (!isset($annotations[$req])) {
           unset($props[$rProp->getName()]);

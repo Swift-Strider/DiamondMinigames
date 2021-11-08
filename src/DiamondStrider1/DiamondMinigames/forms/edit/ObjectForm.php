@@ -6,6 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\forms\edit;
 
 use DiamondStrider1\DiamondMinigames\types\IEditable;
 use DiamondStrider1\DiamondMinigames\types\ISubtyped;
+use DiamondStrider1\DiamondMinigames\types\IValid;
 use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
 use dktapps\pmforms\ModalForm;
@@ -27,7 +28,7 @@ class ObjectForm extends EditForm
     "class"               => "",
   ];
 
-  private bool $error = false;
+  private ?string $error = null;
   /** @var array<string, mixed> */
   private array $formResult = [];
   /** @phpstan-var class-string<IEditable&ISubtyped>[] */
@@ -163,7 +164,7 @@ class ObjectForm extends EditForm
     return new MenuForm(
       $this->getAnnotation("label") ?? $className,
       ($this->getAnnotation("description") ?? "Edit the $className") .
-        ($this->error ? "\n§cYou haven't filled every property!" : ""),
+        ($this->error ? "\n§c" . $this->error : ""),
       $options,
       function (Player $player, int $selectedOption) use ($indexToPropName, $option_count): void {
         $prop = $indexToPropName[$selectedOption] ?? null;
@@ -180,7 +181,7 @@ class ObjectForm extends EditForm
             );
             $editor->onFinish(function ($value) use ($prop): void {
               if ($value === null) return;
-              $this->error = false;
+              $this->error = null;
               $this->formResult[$prop] = $value;
             });
             $this->openForm($player, $editor);
@@ -228,11 +229,16 @@ class ObjectForm extends EditForm
     $object = new $class;
     foreach (array_keys($this->types) as $prop) {
       if ($this->formResult[$prop] === null) {
-        $this->error = true;
+        $this->error = "You haven't filled every property!";
         $this->sendTo($player);
         return;
       }
       $this->getPropReflection($prop)->setValue($object, $this->formResult[$prop]);
+    }
+    if ($object instanceof IValid && !($result = $object->isValid())->success()) {
+      $this->error = $result->getError();
+      $this->sendTo($player);
+      return;
     }
     $this->setFinished($object, $player);
   }
