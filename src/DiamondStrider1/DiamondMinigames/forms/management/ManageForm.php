@@ -7,7 +7,6 @@ namespace DiamondStrider1\DiamondMinigames\forms\management;
 use DiamondStrider1\DiamondMinigames\data\MainConfig;
 use DiamondStrider1\DiamondMinigames\forms\BaseForm;
 use DiamondStrider1\DiamondMinigames\forms\edit\ObjectForm;
-use DiamondStrider1\DiamondMinigames\minigame\MinigameBlueprint;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
