@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames;
 
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
+use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use DiamondStrider1\DiamondMinigames\data\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
@@ -37,7 +38,12 @@ class Plugin extends PluginBase
   
   public function reloadPlugin(): void
   {
-    $this->mainConfig->getObject(true);
+    try {
+      $this->mainConfig->getObject(true);
+    } catch (ConfigException $e) {
+      $this->getLogger()->emergency("Could Not Load Config: §3" . $e->getMessage());
+      $this->getServer()->getPluginManager()->disablePlugin($this);
+    }
   }
 
   public function setMainConfig(MainConfig $mainConfig): void
