@@ -73,6 +73,8 @@ class ObjectForm extends EditForm
       throw new TypeError("Class has a constructor with at least one parameter: $className");
     }
 
+    if ($default !== null && !($rClass->isInstance($default))) $default = null;
+
     foreach ($rClass->getProperties(ReflectionProperty::IS_PUBLIC) as $rProp) {
       if ($rProp->isStatic()) continue;
       $docComment = $rProp->getDocComment();
