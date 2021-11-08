@@ -114,7 +114,7 @@ class ObjectForm extends EditForm
       $options = [];
 
       foreach ($this->subtypes as $class) {
-        $color = ($this->getDefault() instanceof $class) ? "§2" : "§g";
+        $color = ($this->getDefault() instanceof $class) ? "§2" : "§0";
         $slashPos = strrpos($class, "\\", -1);
         $prettyName = substr($class, $slashPos ? $slashPos + 1 : 0);
         $options[] = new MenuOption($color . $prettyName);
@@ -151,7 +151,8 @@ class ObjectForm extends EditForm
       $indexToPropName[] = $prop;
       $type = $this->types[$prop]["type"];
       $valueString = $this->getTypedString($type, $value);
-      $options[] = new MenuOption("§c" . ucfirst($prop) . "§r is $valueString");
+      $nameColor = $value === null ? "§c" : "§2";
+      $options[] = new MenuOption($nameColor . ucfirst($prop) . "§r is $valueString");
     }
 
     $options[] = new MenuOption("Submit");
