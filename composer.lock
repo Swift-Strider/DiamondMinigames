@@ -365,16 +365,16 @@
         },
         {
             "name": "pocketmine/pocketmine-mp",
-            "version": "3.25.2",
+            "version": "3.25.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-MP.git",
-                "reference": "3dae87373154ad52ff6c27874f3fd93c9845a8af"
+                "reference": "7306a2d939105d8d91b4180de9aec42a31d9570f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-MP/zipball/3dae87373154ad52ff6c27874f3fd93c9845a8af",
-                "reference": "3dae87373154ad52ff6c27874f3fd93c9845a8af",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-MP/zipball/7306a2d939105d8d91b4180de9aec42a31d9570f",
+                "reference": "7306a2d939105d8d91b4180de9aec42a31d9570f",
                 "shasum": ""
             },
             "require": {
@@ -411,7 +411,7 @@
                 "pocketmine/spl": "^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.0.0",
+                "phpstan/phpstan": "1.1.1",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.2"
@@ -437,7 +437,7 @@
             "homepage": "https://pmmp.io",
             "support": {
                 "issues": "https://github.com/pmmp/PocketMine-MP/issues",
-                "source": "https://github.com/pmmp/PocketMine-MP/tree/3.25.2"
+                "source": "https://github.com/pmmp/PocketMine-MP/tree/3.25.4"
             },
             "funding": [
                 {
@@ -449,7 +449,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-11-02T17:21:44+00:00"
+            "time": "2021-11-08T22:33:08+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -579,16 +579,16 @@
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "1.0.1",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "0eb6ecdfbcebf2207668087dfb2e215581a75023"
+                "reference": "cb317029197236c571c1b9305b8dd12850d8d85c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0eb6ecdfbcebf2207668087dfb2e215581a75023",
-                "reference": "0eb6ecdfbcebf2207668087dfb2e215581a75023",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cb317029197236c571c1b9305b8dd12850d8d85c",
+                "reference": "cb317029197236c571c1b9305b8dd12850d8d85c",
                 "shasum": ""
             },
             "require": {
@@ -619,7 +619,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.0.1"
+                "source": "https://github.com/phpstan/phpstan/tree/1.1.1"
             },
             "funding": [
                 {
@@ -639,7 +639,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-02T10:25:31+00:00"
+            "time": "2021-11-06T22:46:47+00:00"
         }
     ],
     "aliases": [],
