@@ -38,10 +38,14 @@ abstract class EditForm extends BaseForm
    */
   protected $default;
   /** 
-   * @var Closure[]
-   * @phpstan-var (Closure(T): void)[]
+   * @var Closure
+   * @phpstan-var Closure(T): void
    */
-  private array $closures = [];
+  private ?Closure $callback = null;
+  /**
+   * @var bool when true setFinished() will automatically send the previous BaseForm
+   */
+  private bool $sendPrevious = true;
 
   /**
    * @param string[] $annotations
@@ -61,19 +65,19 @@ abstract class EditForm extends BaseForm
    */
   protected function setFinished(mixed $value, Player $player = null): void
   {
-    foreach ($this->closures as $cb) {
-      $cb($value);
-    }
-    if ($player) FormSessions::sendPrevious($player);
+    if ($this->callback) ($this->callback)($value);
+    if ($player && $this->sendPrevious) FormSessions::sendPrevious($player);
   }
 
   /**
    * @param Closure $cb Signature - function($value): void {}
    * @phpstan-param Closure(T): void $cb
+   * @param bool $sendPrevious Send previous form session automatically
    */
-  public function onFinish(Closure $cb): void
+  public function onFinish(Closure $cb, bool $sendPrevious = true): void
   {
-    $this->closures[] = $cb;
+    $this->callback = $cb;
+    $this->sendPrevious = $sendPrevious;
   }
 
   protected function getTypedString(string $type, mixed $value): string
