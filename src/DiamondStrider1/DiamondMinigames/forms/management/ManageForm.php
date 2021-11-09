@@ -15,20 +15,25 @@ use pocketmine\Player;
 
 class ManageForm extends BaseForm
 {
+  private ?string $notice = null;
+
   protected function createForm(Player $player): Form
   {
     return new MenuForm(
       "Manage DiamondMinigames",
-      "This form manipulates DiamondMinigames's Configurations!",
+      "This form manipulates DiamondMinigames's Configurations!" .
+        ($this->notice ? "\n§3" . $this->notice : ""),
       [
         new MenuOption("Manage Minigames"),
         new MenuOption("Manage Config"),
+        new MenuOption("Reload Plugin"),
       ],
       function (Player $player, int $selectedOption): void {
         if (!$player->hasPermission("diamondminigames.manage")) return;
+        $this->notice = null;
         switch ($selectedOption) {
           case 0:
-            // TODO: minigame management form
+            $this->openForm($player, new MinigamesForm);
             break;
           case 1:
             $editor = new ObjectForm([
@@ -41,6 +46,12 @@ class ManageForm extends BaseForm
             });
             $this->openForm($player, $editor);
             break;
+          case 2:
+            $time = microtime(true);
+            Plugin::getInstance()->reloadPlugin();
+            $diff = microtime(true) - $time;
+            $this->notice = sprintf("Plugin Reloaded §7[§2%.2fs§7]", $diff);
+            $this->sendTo($player);
         }
       }
     );
