@@ -40,8 +40,8 @@ class ListForm extends EditForm
       new MenuOption("Remove Element"),
     ];
 
+    $typeName = $this->getAnnotationNonNull("element_type");
     foreach ($this->formResult as $index => $value) {
-      $typeName = ucfirst($this->getAnnotationNonNull("element_type"));
       $options[] = new MenuOption(sprintf(
         "§8#%d - §0%s",
         $index, $this->getTypedString($typeName, $value)
