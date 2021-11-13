@@ -60,7 +60,7 @@ class MinigameStore
   public static function checkValidName(string $name): bool
   {
     // $name cannot be a number like string("69") because
-    // it will be converted to int(69) when used as a key
-    return preg_match("/[a-zA-Z][a-zA-Z0-9_]*/", $name) === 1;
+    // it will be converted to int(69) when used as an array key
+    return preg_match("/[a-zA-Z0-9_]*[a-zA-Z_]/", $name) === 1;
   }
 }
