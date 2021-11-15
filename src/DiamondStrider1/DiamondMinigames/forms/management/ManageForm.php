@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\forms\management;
 
-use DiamondStrider1\DiamondMinigames\data\MainConfig;
+use DiamondStrider1\DiamondMinigames\misc\MainConfig;
+use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
 use DiamondStrider1\DiamondMinigames\forms\BaseForm;
-use DiamondStrider1\DiamondMinigames\forms\edit\ObjectForm;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
@@ -36,15 +36,16 @@ class ManageForm extends BaseForm
             $this->openForm($player, new MinigamesForm);
             break;
           case 1:
-            $editor = new ObjectForm([
-              "label" => "Edit Configuration",
-              "description" => "Changes are saved to config.yml immediately after the form is submitted.",
-              "class" => MainConfig::class,
-            ], Plugin::getInstance()->getMainConfig());
-            $editor->onFinish(function ($value): void {
-              if ($value) Plugin::getInstance()->setMainConfig($value);
-            });
-            $this->openForm($player, $editor);
+            $currentConfig = Plugin::getInstance()->getMainConfig();
+            $formDescription = "This will be saved to config.yml immediately";
+            $player->sendForm((new ObjectType(MainConfig::class, $formDescription))->createForm(
+              $currentConfig,
+              function ($value) use ($player): void {
+                if ($value) Plugin::getInstance()->setMainConfig($value);
+                $this->notice = "Saved settings to config.yml";
+                $this->sendTo($player);
+              }
+            ));
             break;
           case 2:
             $time = microtime(true);

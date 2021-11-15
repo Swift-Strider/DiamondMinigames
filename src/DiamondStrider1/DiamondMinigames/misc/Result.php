@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\types;
+namespace DiamondStrider1\DiamondMinigames\misc;
 
 /**
  * A boolean value with an error message attached

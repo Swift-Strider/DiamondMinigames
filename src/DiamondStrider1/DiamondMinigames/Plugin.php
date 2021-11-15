@@ -6,7 +6,7 @@ namespace DiamondStrider1\DiamondMinigames;
 
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
-use DiamondStrider1\DiamondMinigames\data\MainConfig;
+use DiamondStrider1\DiamondMinigames\misc\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\MinigameStore;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
@@ -45,15 +45,20 @@ class Plugin extends PluginBase
     try {
       $this->mainConfig->getObject(true);
     } catch (ConfigException $e) {
-      $this->getLogger()->emergency("Could Not Load Config: §3" . $e->getMessage());
-      $this->getServer()->getPluginManager()->disablePlugin($this);
+      $this->handleConfigException($e, true);
+      return;
     }
-    try {
-      $this->mgStore->getMinigames(true);
-    } catch (ConfigException $e) {
-      $this->getLogger()->emergency("Could Not Load Minigames Folder: §3" . $e->getMessage());
+
+    $this->mgStore->getMinigames(true);
+  }
+
+  public function handleConfigException(ConfigException $e, bool $fatal): void
+  {
+    $this->getLogger()->emergency("Error while Loading!\n\n§l§c{$e->getMessage()}\n");
+    foreach (explode("\n", $e->getTraceAsString()) as $line)
+      $this->getLogger()->debug("Stack Trace: §c" . $line);
+    if ($fatal)
       $this->getServer()->getPluginManager()->disablePlugin($this);
-    }
   }
 
   public function setMainConfig(MainConfig $mainConfig): void

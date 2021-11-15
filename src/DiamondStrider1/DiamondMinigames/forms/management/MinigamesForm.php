@@ -6,10 +6,13 @@ namespace DiamondStrider1\DiamondMinigames\forms\management;
 
 use DiamondStrider1\DiamondMinigames\data\MinigameStore;
 use DiamondStrider1\DiamondMinigames\forms\BaseForm;
-use DiamondStrider1\DiamondMinigames\forms\edit\StringForm;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
 use DiamondStrider1\DiamondMinigames\minigame\MinigameBlueprint;
 use DiamondStrider1\DiamondMinigames\Plugin;
+use dktapps\pmforms\CustomForm;
+use dktapps\pmforms\CustomFormResponse;
+use dktapps\pmforms\element\Input;
+use dktapps\pmforms\element\Label;
 use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
 use dktapps\pmforms\ModalForm;
@@ -39,20 +42,26 @@ class MinigamesForm extends BaseForm
         $this->notice = null;
         if ($selectedOption === $option_count - 1) {
           $editor = new MinigameCreateForm(
-            function (string $name, MinigameBlueprint $minigame) {
+            function (?MinigameBlueprint $minigame, ?string $name) use ($player) {
+              if (!$minigame) {
+                $this->notice = "Minigame Create Canceled";
+                $this->sendTo($player);
+                return;
+              }
+              $name ??= "_" . random_int(1000, 9999);
               $mgStore = Plugin::getInstance()->getMinigameStore();
               if (isset($mgStore->getMinigames()[$name])) {
                 $oldName = $name;
                 $name .= "_" . random_int(1000, 9999);
-                $this->notice = "A minigame named $oldName exists, so $name has been used instead.";
+                $this->notice = "A minigame named \"$oldName\" exists, so \"$name\" has been used instead.";
               } else {
-                $this->notice = "Created Minigame $name";
+                $this->notice = "Created Minigame \"$name\"";
               }
               $mgStore->setMinigame($name, $minigame);
+              $this->sendTo($player);
             }
           );
           $editor->sendTo($player);
-          FormSessions::pushPrevious($player, $this);
           return;
         }
 
@@ -67,7 +76,8 @@ class MinigamesForm extends BaseForm
           "Options for $name",
           "What do you want to do?",
           [
-            new MenuOption("§2Edit and Rename"),
+            new MenuOption("§2Rename"),
+            new MenuOption("§2Edit"),
             new MenuOption("§2Copy"),
             new MenuOption("§cDelete"),
           ],
@@ -80,41 +90,74 @@ class MinigamesForm extends BaseForm
             }
             switch ($selectedOption) {
               case 0:
-                $editor = new MinigameCreateForm(
-                  function (string $newName, MinigameBlueprint $minigame) use ($name) {
-                    $mgStore = Plugin::getInstance()->getMinigameStore();
-                    $mgStore->setMinigame($name, $minigame);
-
-                    $this->notice = "";
-                    if ($name !== $newName) {
-                      $mgStore->deleteMinigame($name);
-                      $this->notice .= "Renamed and ";
+                $player->sendForm(new CustomForm(
+                  "Rename Minigame \"$name\"",
+                  [
+                    new Label("description", "Choose a name for the Minigame copy"),
+                    new Input("name", "", "", $name),
+                  ],
+                  function (Player $player, CustomFormResponse $data) use ($name, $mg): void {
+                    $newName = $data->getString("name");
+                    if (!MinigameStore::checkValidName($newName) || $newName === $name) {
+                      $this->notice = "Rename canceled because the name \"$newName\" was invalid.";
+                      $this->sendTo($player);
+                      return;
                     }
-                    $this->notice .= "Updated Minigame $name";
+                    $mgStore = Plugin::getInstance()->getMinigameStore();
+                    $mgStore->deleteMinigame($name);
+                    $mgStore->setMinigame($newName, $mg);
+                    $this->notice = "Renamed \"$name\" to \"$newName\"";
+                    $this->sendTo($player);
                   },
-                  $mg,
-                  $name
-                );
-                $editor->sendTo($player);
-                FormSessions::pushPrevious($player, $this);
+                  function (Player $player): void {
+                    $this->notice = "Rename Canceled";
+                    $this->sendTo($player);
+                  }
+                ));
                 break;
               case 1:
-                $editor = new StringForm([
-                  "label" => "Minigame Name",
-                  "description" => "Choose a name for the Minigame copy"
-                ]);
-                $editor->onFinish(function ($copyName) use ($name, $mg): void {
-                  if ($copyName === null || !MinigameStore::checkValidName($copyName)) {
-                    $this->notice = "Copy canceled because the name \"$copyName\" was invalid.";
-                    return;
-                  }
-                  $mgStore = Plugin::getInstance()->getMinigameStore();
-                  $mgStore->setMinigame($copyName, $mg);
-                  $this->notice = "Copied ($name) into ($copyName)";
-                });
-                $this->openForm($player, $editor);
+                $editor = new MinigameCreateForm(
+                  function (?MinigameBlueprint $minigame) use ($player, $name) {
+                    if (!$minigame) {
+                      $this->sendTo($player);
+                      return;
+                    }
+                    $mgStore = Plugin::getInstance()->getMinigameStore();
+                    $mgStore->setMinigame($name, $minigame);
+                    $this->notice .= "Updated Minigame: \"$name\"";
+                    $this->sendTo($player);
+                  },
+                  $mg,
+                  promptName: false
+                );
+                $editor->sendTo($player);
                 break;
               case 2:
+                $player->sendForm(new CustomForm(
+                  "Minigame Copy's Name",
+                  [
+                    new Label("description", "Choose a name for the Minigame copy"),
+                    new Input("name", "", "", $name),
+                  ],
+                  function (Player $player, CustomFormResponse $data) use ($name, $mg): void {
+                    $copyName = $data->getString("name");
+                    if (!MinigameStore::checkValidName($copyName) || $copyName === $name) {
+                      $this->notice = "Copy canceled because the name \"$copyName\" was invalid.";
+                      $this->sendTo($player);
+                      return;
+                    }
+                    $mgStore = Plugin::getInstance()->getMinigameStore();
+                    $mgStore->setMinigame($copyName, $mg);
+                    $this->notice = "Copied \"$name\" to \"$copyName\"";
+                    $this->sendTo($player);
+                  },
+                  function (Player $player): void {
+                    $this->notice = "Copy Canceled";
+                    $this->sendTo($player);
+                  }
+                ));
+                break;
+              case 3:
                 $player->sendForm(new ModalForm(
                   "Delete the minigame $name?",
                   "The minigame will be gone forever (A really long time)",
@@ -125,7 +168,7 @@ class MinigamesForm extends BaseForm
                     }
                     $mgStore = Plugin::getInstance()->getMinigameStore();
                     $mgStore->deleteMinigame($name);
-                    $this->notice = "Deleted minigame $name. This action cannot be undone.";
+                    $this->notice = "Deleted minigame \"$name\". This action cannot be undone.";
                     $this->sendTo($player);
                   }
                 ));

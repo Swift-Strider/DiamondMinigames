@@ -8,7 +8,7 @@ use Closure;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\BaseHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\IStrategyImpl;
-use DiamondStrider1\DiamondMinigames\types\Result;
+use DiamondStrider1\DiamondMinigames\misc\Result;
 use pocketmine\Player;
 use ReflectionClass;
 use ReflectionMethod;

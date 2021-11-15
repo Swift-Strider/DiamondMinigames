@@ -1,7 +1,42 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property DiamondStrider1\\\\DiamondMinigames\\\\forms\\\\edit\\\\EditForm\\:\\:\\$formTypes with generic class DiamondStrider1\\\\DiamondMinigames\\\\forms\\\\edit\\\\EditForm does not specify its types\\: T$#"
+			message: "#^Method DiamondStrider1\\\\DiamondMinigames\\\\data\\\\ClassInfo\\:\\:getProps\\(\\) return type with generic interface DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\IValueType does not specify its types\\: T$#"
 			count: 1
-			path: src/DiamondStrider1/DiamondMinigames/forms/edit/EditForm.php
+			path: src/DiamondStrider1/DiamondMinigames/data/ClassInfo.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$inject contains generic class DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\ListType but does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/data/ClassInfo.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$inject contains generic interface DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\IValueType but does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/data/ClassInfo.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$other contains generic interface DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\IValueType but does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/data/ClassInfo.php
+
+		-
+			message: "#^Property DiamondStrider1\\\\DiamondMinigames\\\\data\\\\ClassInfo\\:\\:\\$cache with generic class DiamondStrider1\\\\DiamondMinigames\\\\data\\\\ClassInfo does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/data/ClassInfo.php
+
+		-
+			message: "#^Property DiamondStrider1\\\\DiamondMinigames\\\\data\\\\ClassInfo\\:\\:\\$props with generic interface DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\IValueType does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/data/ClassInfo.php
+
+		-
+			message: "#^Method DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\ListType\\:\\:setType\\(\\) has parameter \\$type with generic interface DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\IValueType but does not specify its types\\: T$#"
+			count: 1
+			path: src/DiamondStrider1/DiamondMinigames/data/metadata/ListType.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$inject contains generic interface DiamondStrider1\\\\DiamondMinigames\\\\data\\\\metadata\\\\IValueType but does not specify its types\\: T$#"
+			count: 4
+			path: src/DiamondStrider1/DiamondMinigames/data/metadata/ObjectType.php
 

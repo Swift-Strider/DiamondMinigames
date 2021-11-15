@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\data;
 
 use DiamondStrider1\DiamondMinigames\minigame\MinigameBlueprint;
-use DiamondStrider1\DiamondMinigames\types\Result;
+use DiamondStrider1\DiamondMinigames\Plugin;
 
 class MinigameStore
 {
@@ -28,7 +28,7 @@ class MinigameStore
   {
     if ($reload === true) {
       $files = glob($this->folder . "/*.yml");
-      if ($files === false) throw ConfigException::unknownError("Could not load minigames");
+      if ($files === false) throw new ConfigException("Could not load minigames from folder");
       foreach ($files as $file) {
         $name = substr(basename($file), 0, -4); // removes ".yml" from basename
         $this->minigameConfigs[$name] = new NeoConfig($file, MinigameBlueprint::class);
@@ -36,7 +36,12 @@ class MinigameStore
     }
     $minigames = [];
     foreach ($this->minigameConfigs as $name => $config) {
-      $minigames[$name] = $config->getObject($reload);
+      try {
+        $minigames[$name] = $config->getObject($reload);
+      } catch (ConfigException $e) {
+        Plugin::getInstance()->handleConfigException($e, false);
+        unset($this->minigameConfigs[$name]);
+      }
     }
     return $minigames;
   }
@@ -54,7 +59,7 @@ class MinigameStore
   {
     if (isset($this->minigameConfigs[$name])) unset($this->minigameConfigs[$name]);
     if (!file_exists($file = "$this->folder/$name.yml")) return;
-    if (!unlink($file)) throw ConfigException::unknownError("Could not delete minigame");
+    unlink($file);
   }
 
   public static function checkValidName(string $name): bool

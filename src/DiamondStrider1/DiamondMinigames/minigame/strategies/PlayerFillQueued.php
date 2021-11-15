@@ -4,40 +4,37 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 
+use DiamondStrider1\DiamondMinigames\data\metadata\IntType;
+use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
-use DiamondStrider1\DiamondMinigames\types\Result;
+use DiamondStrider1\DiamondMinigames\misc\Result;
 
-class PlayerFillQueued extends PlayerFillStrategy
+class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
 {
-  /**
-   * @label Maximum Teams
-   * @description The highest number of teams per game.
-   * @config-key max-teams
-   * @type integer
-   */
+  #[IntType(
+    config_key: "max-teams",
+    description: "The highest number of teams per game"
+  )]
   public int $maxTeams;
-  /**
-   * @label Minimum Teams
-   * @description Number of teams to be created before game start.
-   * @config-key min-teams
-   * @type integer
-   */
+
+  #[IntType(
+    config_key: "min-teams",
+    description: "The lowest number of teams a game may start with"
+  )]
   public int $minTeams;
-  /**
-   * @label Maximum Members Per Team
-   * @description Maximum members per team.
-   * @config-key min-team-members
-   * @type integer
-   */
+
+  #[IntType(
+    config_key: "max-members",
+    description: "The highest number of members per team"
+  )]
   public int $maxTeamMembers;
-  /**
-   * @label Minimum Member Per Team
-   * @description Minimum members per team.
-   * @config-key max-team-members
-   * @type integer
-   */
+
+  #[IntType(
+    config_key: "min-members",
+    description: "The lowest number of members per team a game may start with"
+  )]
   public int $minTeamMembers;
 
   public function isValid(): Result
@@ -75,7 +72,7 @@ class PlayerFillQueued extends PlayerFillStrategy
         $this->minigame = $minigame;
         $teams = [];
         for ($i = 0; $i < $this->strategy->minTeams; $i++) {
-          $teams[] = new Team("Team #" . ($i+1));
+          $teams[] = new Team("Team #" . ($i + 1));
         }
         $this->minigame->setTeams($teams);
       }

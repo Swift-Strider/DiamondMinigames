@@ -8,36 +8,27 @@ use Exception;
 
 class ConfigException extends Exception
 {
-  const UNKNOWN_ERROR = -1;
-  const TYPE_MISMATCH = 0;
-  const FILE_IS_DIRECTORY = 1;
-
-  /** @phpstan-param self::* $cause */
-  public function __construct(
-    string $message,
-    private int $cause = -1,
-  ) {
-    parent::__construct($message);
+  public function __construct(string $message, ?ConfigContext $context = null)
+  {
+    parent::__construct(self::getPrettyMessage($message, $context));
   }
 
-  /** @phpstan-return self::* */
-  public function getCause(): int
+  private static function getPrettyMessage(string $message, ?ConfigContext $context): string
   {
-    return $this->cause;
-  }
+    $dashes = str_repeat("-", 15);
+    $message = "$dashes ConfigException: $message $dashes";
 
-  public static function unknownError(string $message): ConfigException
-  {
-    return new self($message, ConfigException::UNKNOWN_ERROR);
-  }
+    if ($context) {
+      $headerLen = strlen($message);
+      $file = $context->getFile();
+      $prettyFile = "<pocketmine_server>" . substr($file, strrpos($file, "plugin_data", -1) - 1);
+      $message .= "\n  Error in file \"$prettyFile\"\n";
+      if ($context->getDepth() > 0) {
+        $message .= "  This occurred at the key \"{$context->getNestedKeys()}\"\n";
+      }
+      $message .= str_repeat("-", $headerLen);
+    }
 
-  public static function typeMismatch(string $message): ConfigException
-  {
-    return new self($message, ConfigException::TYPE_MISMATCH);
-  }
-
-  public static function fileIsDirectory(string $message): ConfigException
-  {
-    return new self($message, ConfigException::FILE_IS_DIRECTORY);
+    return $message;
   }
 }

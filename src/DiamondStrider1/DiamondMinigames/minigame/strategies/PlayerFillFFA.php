@@ -7,7 +7,6 @@ namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
-use DiamondStrider1\DiamondMinigames\types\IValid;
 
 class PlayerFillFFA extends PlayerFillStrategy
 {
