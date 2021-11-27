@@ -70,16 +70,18 @@ class Minigame
   {
     if ($this->state !== self::PENDING) return;
     $hook = new MinigameStartHook;
-    $this->processHook($hook);
-    $this->state = self::RUNNING;
+    $this->processHook($hook, function (): void {
+      $this->state = self::RUNNING;
+    });
   }
 
   public function endGame(Team $winningTeam): void
   {
     if ($this->state !== self::RUNNING) return;
     $hook = new MinigameEndHook($winningTeam);
-    $this->processHook($hook);
-    $this->state = self::ENDED;
+    $this->processHook($hook, function (): void {
+      $this->state = self::ENDED;
+    });
   }
 
   public function addPlayer(Player $player): Result
@@ -141,21 +143,24 @@ class Minigame
     $this->teams = $teams;
   }
 
-  /** @var BaseHook[] */
+  /** @phpstan-var array<array{BaseHook, null|Closure(): void}> */
   private array $hookQueue = [];
   private bool $isProcessingHook = false;
-  public function processHook(BaseHook $hook): void
+  /** @phpstan-param null|Closure(): void $cb */
+  public function processHook(BaseHook $hook, ?Closure $cb = null): void
   {
     if (!isset($this->bindings[get_class($hook)])) return;
-    $this->hookQueue[] = $hook;
+    $this->hookQueue[] = [$hook, $cb];
     // processHook was called while processing a different hook
     if ($this->isProcessingHook) return;
 
     $this->isProcessingHook = true;
-    while ($hook = array_shift($this->hookQueue)) {
+    while ($value = array_shift($this->hookQueue)) {
+      [$hook, $cb] = $value;
       foreach ($this->bindings[get_class($hook)] as $binding) {
         ($binding)($hook);
       }
+      if ($cb) ($cb)();
     }
     $this->isProcessingHook = false;
   }
