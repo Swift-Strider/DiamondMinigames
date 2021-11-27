@@ -22,6 +22,7 @@ use pocketmine\Player;
 class MinigamesForm extends BaseForm
 {
   private ?string $notice = null;
+  
   protected function createForm(Player $player): Form
   {
     $options = [];

@@ -24,6 +24,7 @@ class ListType implements IValueType
 {
   /** @phpstan-var IValueType<T> */
   private IValueType $type;
+  
   public function __construct(
     private string $config_key = "<root>",
     private string $description = ""

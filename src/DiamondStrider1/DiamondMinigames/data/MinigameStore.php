@@ -14,6 +14,7 @@ class MinigameStore
    * @var NeoConfig[]
    */
   private array $minigameConfigs = [];
+  
   /** @param string $folder path to folder without a trailing slash */
   public function __construct(
     private string $folder,

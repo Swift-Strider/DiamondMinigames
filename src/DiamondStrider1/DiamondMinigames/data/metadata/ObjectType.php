@@ -28,6 +28,7 @@ class ObjectType implements IValueType
 {
   /** @phpstan-var ClassInfo<T> */
   private ClassInfo $classInfo;
+  
   /**
    * @phpstan-param class-string<T> $class
    */

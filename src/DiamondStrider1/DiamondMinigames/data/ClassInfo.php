@@ -18,6 +18,7 @@ class ClassInfo
 {
   /** @var self[] */
   private static array $cache = [];
+  
   /** 
    * @phpstan-template V of object
    * @phpstan-param class-string<V> $class
