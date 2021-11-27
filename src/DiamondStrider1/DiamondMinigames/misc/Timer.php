@@ -13,7 +13,7 @@ use TypeError;
 
 /**
  * Class for running code periodically for a set amount of time
- * // TODO: Mainly used by PlayerQueuedFill's Impl to start the minigame
+ * // TODO: Mainly used by PlayerFillQueued's Impl to start the minigame
  */
 class Timer
 {
