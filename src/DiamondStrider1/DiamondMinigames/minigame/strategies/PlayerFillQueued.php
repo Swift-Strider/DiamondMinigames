@@ -90,13 +90,13 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
           if (count($team->getPlayers()) < count($sTeam->getPlayers())) $sTeam = $team;
         }
 
-        if (count($sTeam->getPlayers()) === $this->strategy->maxTeamMembers)
+        if ($sTeam !== null && count($sTeam->getPlayers()) === $this->strategy->maxTeamMembers)
           $sTeam = null;
         // Add another team if possible
         if ($sTeam === null && count($this->minigame->getTeams()) < $this->strategy->maxTeams)
           $sTeam = new Team("Team #" . (count($this->minigame->getTeams()) + 1));
         // Could not find or add a team
-        if ($team === null) return;
+        if ($sTeam === null) return;
 
         $hook->setTeam($sTeam);
 
