@@ -7,6 +7,7 @@ namespace DiamondStrider1\DiamondMinigames\minigame;
 use Closure;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\BaseHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
+use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use pocketmine\Player;
@@ -47,7 +48,7 @@ class Minigame
 
         $type = $rMethod->getParameters()[0]->getType();
         if ($type instanceof ReflectionNamedType) {
-          if(!class_exists($type->getName())) continue;
+          if (!class_exists($type->getName())) continue;
           $type = new ReflectionClass($type->getName());
           if (!$type->isSubclassOf(BaseHook::class)) continue;
           $closure = $rMethod->getClosure($strategy);
@@ -66,7 +67,7 @@ class Minigame
   public function addPlayer(Player $player): Result
   {
     if ($this->hasPlayer($player)) return Result::error("Already In Game");
-    
+
     $hook = new PlayerAddHook($player, null);
     $this->processHook($hook);
 
@@ -91,7 +92,12 @@ class Minigame
   public function removePlayer(Player $player): bool
   {
     if (!isset($this->players[$player->getRawUniqueId()])) return false;
+    $this->processHook(new PlayerRemoveHook($player));
+
     unset($this->players[$player->getRawUniqueId()]);
+    foreach ($this->teams as $team)
+      if ($team->hasPlayer($player)) $team->removePlayer($player);
+
     return true;
   }
 
