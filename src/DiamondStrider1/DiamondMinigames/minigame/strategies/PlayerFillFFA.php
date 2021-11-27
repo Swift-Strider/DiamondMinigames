@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 
+use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
@@ -28,6 +29,7 @@ class PlayerFillFFA extends PlayerFillStrategy
       {
         $team = new Team("FFA TEAM #" . (count($this->minigame->getTeams()) + 1));
         $hook->setTeam($team);
+        if ($this->minigame->getState() === Minigame::PENDING) $this->minigame->startGame();
       }
     };
   }

@@ -6,6 +6,8 @@ namespace DiamondStrider1\DiamondMinigames\minigame;
 
 use Closure;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\BaseHook;
+use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameEndHook;
+use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\IStrategyImpl;
@@ -64,6 +66,22 @@ class Minigame
     return $this->state;
   }
 
+  public function startGame(): void
+  {
+    if ($this->state !== self::PENDING) return;
+    $hook = new MinigameStartHook;
+    $this->processHook($hook);
+    $this->state = self::RUNNING;
+  }
+
+  public function endGame(Team $winningTeam): void
+  {
+    if ($this->state !== self::RUNNING) return;
+    $hook = new MinigameEndHook($winningTeam);
+    $this->processHook($hook);
+    $this->state = self::ENDED;
+  }
+
   public function addPlayer(Player $player): Result
   {
     if ($this->hasPlayer($player)) return Result::error("Already In Game");
@@ -74,10 +92,10 @@ class Minigame
     if ($hook->getCanceled()) return Result::error($hook->getCanceledMessage() ?? "Join Cancelled");
     if (!($team = $hook->getTeam())) return Result::error("No Empty Team Found");
 
-    if (array_search($team, $this->teams, true) === false) $this->teams[] = $team;
-
     $this->players[$player->getRawUniqueId()] = $player;
+    if (array_search($team, $this->teams, true) === false) $this->teams[] = $team;
     $team->addPlayer($player);
+
     return Result::ok();
   }
 
@@ -102,6 +120,16 @@ class Minigame
   }
 
   /** @return Team[] */
+  public function getPlayingTeams(): array
+  {
+    $teams = [];
+    foreach ($this->teams as $team) {
+      if (count($team->getPlayers()) > 0) $teams[] = $team;
+    }
+    return $teams;
+  }
+
+  /** @return Team[] */
   public function getTeams(): array
   {
     return $this->teams;
@@ -113,11 +141,22 @@ class Minigame
     $this->teams = $teams;
   }
 
+  /** @var BaseHook[] */
+  private array $hookQueue = [];
+  private bool $isProcessingHook = false;
   public function processHook(BaseHook $hook): void
   {
     if (!isset($this->bindings[get_class($hook)])) return;
-    foreach ($this->bindings[get_class($hook)] as $binding) {
-      ($binding)($hook);
+    $this->hookQueue[] = $hook;
+    // processHook was called while processing a different hook
+    if ($this->isProcessingHook) return;
+
+    $this->isProcessingHook = true;
+    while ($hook = array_shift($this->hookQueue)) {
+      foreach ($this->bindings[get_class($hook)] as $binding) {
+        ($binding)($hook);
+      }
     }
+    $this->isProcessingHook = false;
   }
 }

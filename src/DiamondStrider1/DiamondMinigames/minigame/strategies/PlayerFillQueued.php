@@ -6,6 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IntType;
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
+use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
@@ -88,10 +89,23 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
           if ($sTeam === null) $sTeam = $team;
           if (count($team->getPlayers()) < count($sTeam->getPlayers())) $sTeam = $team;
         }
+
+        if (count($sTeam->getPlayers()) === $this->strategy->maxTeamMembers)
+          $sTeam = null;
+        // Add another team if possible
         if ($sTeam === null && count($this->minigame->getTeams()) < $this->strategy->maxTeams)
           $sTeam = new Team("Team #" . (count($this->minigame->getTeams()) + 1));
-        if ($sTeam !== null && count($sTeam->getPlayers()) < $this->strategy->maxTeamMembers)
-          $hook->setTeam($sTeam);
+        // Could not find or add a team
+        if ($team === null) return;
+
+        $hook->setTeam($sTeam);
+
+        foreach ($this->minigame->getTeams() as $team) {
+          if (count($team->getPlayers()) < $this->strategy->minTeamMembers) {
+            return;
+          }
+        }
+        $this->minigame->startGame();
       }
     };
   }
