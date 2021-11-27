@@ -32,6 +32,10 @@ class Timer
 
   public function start(int $ticks, int $totalTicks): void
   {
+    if ($totalTicks === 0) {
+      ($this->finished)();
+      return;
+    }
     if ($ticks > $totalTicks)
       throw new TypeError("\$ticks=$ticks is not less than \$totalTicks=$totalTicks");
     if ($this->isRunning())
