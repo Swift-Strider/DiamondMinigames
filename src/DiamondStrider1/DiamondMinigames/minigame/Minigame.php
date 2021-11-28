@@ -121,6 +121,12 @@ class Minigame
     return true;
   }
 
+  /** @return array<string, Player> uuid => Player */
+  public function getPlayers(): array
+  {
+    return $this->players;
+  }
+
   /** @return Team[] */
   public function getPlayingTeams(): array
   {
