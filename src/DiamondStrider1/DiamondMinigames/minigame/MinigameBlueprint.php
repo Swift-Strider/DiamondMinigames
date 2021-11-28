@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
+use DiamondStrider1\DiamondMinigames\minigame\impl\BasePlayerFillImpl;
 use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\PlayerFillStrategy;
 
@@ -17,11 +18,12 @@ class MinigameBlueprint
   )]
   public PlayerFillStrategy $playerFillStrategy;
 
-  /** @return IStrategyImpl[] */
+  /** @phpstan-return array{BasePlayerFillImpl, IStrategyImpl[]} */
   public function buildStrategies(): array
   {
     return [
       $this->playerFillStrategy->createImpl(),
+      []
     ];
   }
 }

@@ -6,7 +6,6 @@ namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IntType;
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
-use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\minigame\impl\PlayerFillQueuedImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 
@@ -66,7 +65,7 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
     return Result::ok();
   }
 
-  public function createImpl(): IStrategyImpl
+  public function createImpl(): PlayerFillQueuedImpl
   {
     return new PlayerFillQueuedImpl($this);
   }

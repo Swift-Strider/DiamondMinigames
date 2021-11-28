@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
+use AssertionError;
 use Closure;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\BaseHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameEndHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
+use DiamondStrider1\DiamondMinigames\minigame\impl\BasePlayerFillImpl;
 use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use pocketmine\Player;
@@ -25,6 +27,8 @@ class Minigame
 
   /** @phpstan-var self::* */
   private int $state;
+
+  private BasePlayerFillImpl $playerFill;
   /** @var IStrategyImpl[] */
   private array $strategies = [];
   /** 
@@ -41,7 +45,7 @@ class Minigame
   public function __construct(MinigameBlueprint $blueprint)
   {
     $this->state = self::PENDING;
-    $this->strategies = $blueprint->buildStrategies();
+    [$this->playerFill, $this->strategies] = $blueprint->buildStrategies();
     foreach ($this->strategies as $strategy) {
       $strategy->onInit($this);
       $rStrategy = new ReflectionClass($strategy);
@@ -88,15 +92,16 @@ class Minigame
   {
     if ($this->hasPlayer($player)) return Result::error("Already In Game");
 
-    $hook = new PlayerAddHook($player, null);
-    $this->processHook($hook);
-
-    if ($hook->getCanceled()) return Result::error($hook->getCanceledMessage() ?? "Join Cancelled");
-    if (!($team = $hook->getTeam())) return Result::error("No Empty Team Found");
+    [$result, $team] = $this->playerFill->addPlayer($player);
+    if (!$result->success()) {
+      return $result;
+    }
+    if ($team === null)
+      throw new AssertionError(get_class($this->playerFill) . 'did not provide a $team');
 
     $this->players[$player->getRawUniqueId()] = $player;
-    if (array_search($team, $this->teams, true) === false) $this->teams[] = $team;
-    $team->addPlayer($player);
+    $hook = new PlayerAddHook($player, $team);
+    $this->processHook($hook);
 
     return Result::ok();
   }
@@ -112,11 +117,9 @@ class Minigame
   public function removePlayer(Player $player): bool
   {
     if (!isset($this->players[$player->getRawUniqueId()])) return false;
+    $this->playerFill->removePlayer($player);
     $this->processHook(new PlayerRemoveHook($player));
-
     unset($this->players[$player->getRawUniqueId()]);
-    foreach ($this->teams as $team)
-      if ($team->hasPlayer($player)) $team->removePlayer($player);
 
     return true;
   }

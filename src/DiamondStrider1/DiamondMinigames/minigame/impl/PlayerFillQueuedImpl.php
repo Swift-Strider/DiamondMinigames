@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 
-use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\PlayerFillQueued;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
+use DiamondStrider1\DiamondMinigames\misc\Result;
 use DiamondStrider1\DiamondMinigames\misc\Timer;
 use DiamondStrider1\DiamondMinigames\Plugin;
+use pocketmine\Player;
 
-class PlayerFillQueuedImpl implements IStrategyImpl
+class PlayerFillQueuedImpl extends BasePlayerFillImpl
 {
   private Minigame $minigame;
   private Timer $gameStart;
@@ -60,8 +60,10 @@ class PlayerFillQueuedImpl implements IStrategyImpl
   {
   }
 
-  public function onPlayerAdd(PlayerAddHook $hook): void
+  public function addPlayer(Player $player): array
   {
+    if ($this->minigame->getState() !== Minigame::PENDING)
+      return [Result::error("This game is no longer accepting players"), null];
     $sTeam = null;
     foreach ($this->minigame->getTeams() as $team) {
       if ($sTeam === null) $sTeam = $team;
@@ -74,13 +76,12 @@ class PlayerFillQueuedImpl implements IStrategyImpl
     if ($sTeam === null && count($this->minigame->getTeams()) < $this->strategy->maxTeams)
       $sTeam = new Team("Team #" . (count($this->minigame->getTeams()) + 1));
     // Could not find or add a team
-    if ($sTeam === null) return;
+    if ($sTeam === null) return [Result::error("Could not find a suitable team"), null];
 
-    $hook->setTeam($sTeam);
     $config = Plugin::getInstance()->getMainConfig();
     $config->playerJoined->sendMessage(
       [
-        '$player' => $hook->getPlayer()->getDisplayName(),
+        '$player' => $player->getDisplayName(),
         '$count' => (string) count($this->minigame->getPlayers()),
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
@@ -90,25 +91,28 @@ class PlayerFillQueuedImpl implements IStrategyImpl
 
     foreach ($this->minigame->getTeams() as $team) {
       if (count($team->getPlayers()) < $this->strategy->minTeamMembers) {
-        return;
+        return [Result::ok(), $sTeam];
       }
     }
     if (!$this->gameStart->isRunning())
       $this->gameStart->start(20, $this->strategy->waitTime * 20);
+    return [Result::ok(), $sTeam];
   }
 
-  public function onPlayerRemove(PlayerRemoveHook $hook): void
+  public function removePlayer(Player $player): void
   {
     $config = Plugin::getInstance()->getMainConfig();
     $config->playerLeft->sendMessage(
       [
-        '$player' => $hook->getPlayer()->getDisplayName(),
+        '$player' => $player->getDisplayName(),
         '$count' => (string) count($this->minigame->getPlayers()),
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
       ],
       $this->minigame->getPlayers()
     );
+    foreach ($this->teams as $team)
+      if ($team->hasPlayer($player)) $team->removePlayer($player);
     if ($this->gameStart->isRunning()) {
       foreach ($this->minigame->getTeams() as $team) {
         if (count($team->getPlayers()) < $this->strategy->minTeamMembers) {

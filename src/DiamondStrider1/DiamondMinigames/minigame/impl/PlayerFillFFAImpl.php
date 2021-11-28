@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 
-use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
+use pocketmine\Player;
+use DiamondStrider1\DiamondMinigames\misc\Result;
 
-class PlayerFillFFAImpl implements IStrategyImpl
+class PlayerFillFFAImpl extends BasePlayerFillImpl
 {
   private Minigame $minigame;
 
@@ -21,10 +22,21 @@ class PlayerFillFFAImpl implements IStrategyImpl
   {
   }
 
-  public function onPlayerAdd(PlayerAddHook $hook): void
+  public function addPlayer(Player $player): array
   {
     $team = new Team("FFA TEAM #" . (count($this->minigame->getTeams()) + 1));
-    $hook->setTeam($team);
+    $this->minigame->setTeams([...$this->minigame->getTeams(), $team]);
     if ($this->minigame->getState() === Minigame::PENDING) $this->minigame->startGame();
+    return [Result::ok(), $team];
+  }
+
+  public function removePlayer(Player $player): void
+  {
+    $this->minigame->setTeams(array_filter(
+      $this->minigame->getTeams(),
+      function (Team $team) use ($player): bool {
+        return !$team->hasPlayer($player);
+      }
+    ));
   }
 }
