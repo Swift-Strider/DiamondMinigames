@@ -111,7 +111,7 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
       ],
       $this->minigame->getPlayers()
     );
-    foreach ($this->teams as $team)
+    foreach ($this->minigame->getTeams() as $team)
       if ($team->hasPlayer($player)) $team->removePlayer($player);
     if ($this->gameStart->isRunning()) {
       foreach ($this->minigame->getTeams() as $team) {
