@@ -16,6 +16,7 @@ class PlayerFillFFA extends PlayerFillStrategy
     return new class implements IStrategyImpl
     {
       private Minigame $minigame;
+      
       public function onInit(Minigame $minigame): void
       {
         $this->minigame = $minigame;

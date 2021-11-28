@@ -63,6 +63,7 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
     return new class($this) implements IStrategyImpl
     {
       private Minigame $minigame;
+
       public function __construct(
         private PlayerFillQueued $strategy
       ) {
