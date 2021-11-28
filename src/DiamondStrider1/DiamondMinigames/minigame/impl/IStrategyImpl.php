@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
+namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 

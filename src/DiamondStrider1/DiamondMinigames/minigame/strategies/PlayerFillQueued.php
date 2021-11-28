@@ -6,10 +6,8 @@ namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IntType;
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
-use DiamondStrider1\DiamondMinigames\minigame\Minigame;
-use DiamondStrider1\DiamondMinigames\minigame\Team;
+use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
+use DiamondStrider1\DiamondMinigames\minigame\impl\PlayerFillQueuedImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 
 class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
@@ -38,6 +36,12 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
   )]
   public int $minTeamMembers;
 
+  #[IntType(
+    config_key: "wait-time",
+    description: "Period to wait before starting the game to allow for additional players"
+  )]
+  public int $waitTime;
+
   public function isValid(): Result
   {
     $errors = [];
@@ -52,6 +56,10 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
       $errors[] = "Min Team Members MUST BE at least 1";
     }
 
+    if ($this->waitTime < 0) {
+      $errors[] = "Wait Time MUST BE 0 or greater";
+    }
+
     if (count($errors) > 0) {
       return Result::error(implode(", AND ", $errors));
     }
@@ -60,54 +68,6 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
 
   public function createImpl(): IStrategyImpl
   {
-    return new class($this) implements IStrategyImpl
-    {
-      private Minigame $minigame;
-
-      public function __construct(
-        private PlayerFillQueued $strategy
-      ) {
-      }
-
-      public function onInit(Minigame $minigame): void
-      {
-        $this->minigame = $minigame;
-        $teams = [];
-        for ($i = 0; $i < $this->strategy->minTeams; $i++) {
-          $teams[] = new Team("Team #" . ($i + 1));
-        }
-        $this->minigame->setTeams($teams);
-      }
-
-      public function onDestroy(): void
-      {
-      }
-
-      public function onPlayerAdd(PlayerAddHook $hook): void
-      {
-        $sTeam = null;
-        foreach ($this->minigame->getTeams() as $team) {
-          if ($sTeam === null) $sTeam = $team;
-          if (count($team->getPlayers()) < count($sTeam->getPlayers())) $sTeam = $team;
-        }
-
-        if ($sTeam !== null && count($sTeam->getPlayers()) === $this->strategy->maxTeamMembers)
-          $sTeam = null;
-        // Add another team if possible
-        if ($sTeam === null && count($this->minigame->getTeams()) < $this->strategy->maxTeams)
-          $sTeam = new Team("Team #" . (count($this->minigame->getTeams()) + 1));
-        // Could not find or add a team
-        if ($sTeam === null) return;
-
-        $hook->setTeam($sTeam);
-
-        foreach ($this->minigame->getTeams() as $team) {
-          if (count($team->getPlayers()) < $this->strategy->minTeamMembers) {
-            return;
-          }
-        }
-        $this->minigame->startGame();
-      }
-    };
+    return new PlayerFillQueuedImpl($this);
   }
 }
