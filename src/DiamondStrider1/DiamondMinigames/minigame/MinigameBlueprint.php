@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
-use DiamondStrider1\DiamondMinigames\minigame\strategies\IStrategyImpl;
+use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\PlayerFillStrategy;
 
 class MinigameBlueprint

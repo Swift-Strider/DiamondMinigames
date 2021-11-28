@@ -10,7 +10,7 @@ use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameEndHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
 use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
-use DiamondStrider1\DiamondMinigames\minigame\strategies\IStrategyImpl;
+use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use pocketmine\Player;
 use ReflectionClass;
