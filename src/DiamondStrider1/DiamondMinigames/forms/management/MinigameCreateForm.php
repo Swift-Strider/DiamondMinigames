@@ -16,12 +16,10 @@ use pocketmine\Player;
 
 class MinigameCreateForm
 {
-  /** @phpstan-param Closure(?MinigameBlueprint $mg, ?string $name): void $callback */
+  /** @phpstan-param Closure(?MinigameBlueprint $mg): void $callback */
   public function __construct(
     private Closure $callback,
-    private ?MinigameBlueprint $default = null,
-    private ?string $defaultName = null,
-    private bool $promptName = true
+    private ?MinigameBlueprint $default = null
   ) {
   }
 
@@ -31,34 +29,7 @@ class MinigameCreateForm
     $player->sendForm(
       (new ObjectType(MinigameBlueprint::class, $formDescription))->createForm(
         $this->default,
-        function ($value) use ($player): void {
-          if (!$value) {
-            ($this->callback)(null, null);
-            return;
-          }
-          if (!$this->promptName) {
-            ($this->callback)($value, null);
-            return;
-          }
-          $player->sendForm(new CustomForm(
-            "Minigame's Name",
-            [
-              new Label("description", "This is also the filename the minigame is saved " .
-                "to, so only alphanumerics and underscores are allowed"),
-              new Input("name", "", "", $this->defaultName ?? ""),
-            ],
-            function (Player $player, CustomFormResponse $data) use ($value): void {
-              $name = $data->getString("name");
-              if (!MinigameStore::checkValidName($name)) {
-                $name = "#" . random_int(1000, 9999);
-              }
-              ($this->callback)($value, $name);
-            },
-            function (Player $player) use ($value): void {
-              ($this->callback)($value, "#" . random_int(1000, 9999));
-            }
-          ));
-        }
+        $this->callback
       )
     );
   }

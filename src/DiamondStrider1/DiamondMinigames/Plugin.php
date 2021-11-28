@@ -49,7 +49,7 @@ class Plugin extends PluginBase
       return;
     }
 
-    $this->mgStore->getMinigames(true);
+    $this->mgStore->getAll(true);
   }
 
   public function handleConfigException(ConfigException $e, bool $fatal): void

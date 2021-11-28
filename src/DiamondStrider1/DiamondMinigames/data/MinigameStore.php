@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\data;
 
+use AssertionError;
 use DiamondStrider1\DiamondMinigames\minigame\MinigameBlueprint;
 use DiamondStrider1\DiamondMinigames\Plugin;
 
@@ -14,7 +15,7 @@ class MinigameStore
    * @var NeoConfig[]
    */
   private array $minigameConfigs = [];
-  
+
   /** @param string $folder path to folder without a trailing slash */
   public function __construct(
     private string $folder,
@@ -24,8 +25,13 @@ class MinigameStore
     }
   }
 
+  public function get(string $name, bool $reload = false): ?MinigameBlueprint
+  {
+    return $this->getAll($reload)[$name] ?? null;
+  }
+
   /** @return array<string, MinigameBlueprint> */
-  public function getMinigames(bool $reload = false): array
+  public function getAll(bool $reload = false): array
   {
     if ($reload === true) {
       $files = glob($this->folder . "/*.yml");
@@ -47,8 +53,11 @@ class MinigameStore
     return $minigames;
   }
 
-  public function setMinigame(string $name, MinigameBlueprint $minigame): void
+  public function set(MinigameBlueprint $minigame): void
   {
+    $name = $minigame->name;
+    if (!self::checkValidName($name))
+      throw new AssertionError("MGBlueprint should insure a valid name");
     if (!isset($this->minigameConfigs[$name])) {
       $file = "$this->folder/$name.yml";
       $this->minigameConfigs[$name] = new NeoConfig($file, MinigameBlueprint::class);
@@ -56,7 +65,7 @@ class MinigameStore
     $this->minigameConfigs[$name]->setObject($minigame);
   }
 
-  public function deleteMinigame(string $name): void
+  public function delete(string $name): void
   {
     if (isset($this->minigameConfigs[$name])) unset($this->minigameConfigs[$name]);
     if (!file_exists($file = "$this->folder/$name.yml")) return;
@@ -67,6 +76,6 @@ class MinigameStore
   {
     // $name cannot be a number like string("69") because
     // it will be converted to int(69) when used as an array key
-    return preg_match("/^[a-zA-Z0-9_]*[a-zA-Z_]$/", $name) === 1;
+    return strlen($name) >= 1 && preg_match("/^[a-zA-Z0-9_]*[a-zA-Z_]$/", $name) === 1;
   }
 }
