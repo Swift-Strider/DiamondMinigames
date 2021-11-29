@@ -38,7 +38,7 @@ class MinigameStore
       if ($files === false) throw new ConfigException("Could not load minigames from folder");
       foreach ($files as $file) {
         $name = substr(basename($file), 0, -4); // removes ".yml" from basename
-        $this->minigameConfigs[$name] = new NeoConfig($file, MinigameBlueprint::class);
+        $this->minigameConfigs[strtolower($name)] = new NeoConfig($file, MinigameBlueprint::class);
       }
     }
     $minigames = [];
@@ -55,7 +55,7 @@ class MinigameStore
 
   public function set(MinigameBlueprint $minigame): void
   {
-    $name = $minigame->name;
+    $name = strtolower($minigame->name);
     if (!self::checkValidName($name))
       throw new AssertionError("MGBlueprint should insure a valid name");
     if (!isset($this->minigameConfigs[$name])) {
