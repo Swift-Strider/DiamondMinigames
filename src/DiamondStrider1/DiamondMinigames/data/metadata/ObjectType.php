@@ -98,7 +98,7 @@ class ObjectType implements IValueType
    */
   private function createObjectForm(?object $value, Closure $callback, ?string $lastError = null): Form
   {
-    if ($value === null || !$this->classInfo->isInstanceOf($value)) $value = new $this->class;
+    $value = $this->classInfo->isInstanceOf($value) ? clone $value : new $this->class;
     foreach ($this->classInfo->getProps() as [$rProp, $inject]) {
       /** @var ReflectionProperty $rProp */
       /** @var IValueType $inject */

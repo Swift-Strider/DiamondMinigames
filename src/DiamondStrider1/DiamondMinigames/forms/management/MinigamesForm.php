@@ -133,7 +133,7 @@ class MinigamesForm extends BaseForm
                 $this->notice = "Copied \"$name\" to \"$copyName\"";
                 $this->sendTo($player);
               },
-              clone $mg
+              $mg
             ))->sendTo($player);
             break;
           case 2:
