@@ -107,8 +107,9 @@ class MinigamesForm extends BaseForm
                   return;
                 }
                 $mgStore = Plugin::getInstance()->getMinigameStore();
+                if ($name !== $minigame->name) $mgStore->delete($name);
                 $mgStore->set($minigame);
-                $this->notice .= "Updated Minigame: \"$name\"";
+                $this->notice .= "Updated Minigame: \"{$minigame->name}\"";
                 $this->sendTo($player);
               },
               $mg
