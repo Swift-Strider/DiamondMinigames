@@ -49,15 +49,15 @@ class MinigamesForm extends BaseForm
                 $this->sendTo($player);
                 return;
               }
-              $name = $minigame->name;
+
               $mgStore = Plugin::getInstance()->getMinigameStore();
-              if ($mgStore->get($name) !== null) {
-                $oldName = $name;
-                $name .= "_" . random_int(1000, 9999);
-                $this->notice = "A minigame named \"$oldName\" exists, so \"$name\" has been used instead.";
-              } else {
-                $this->notice = "Created Minigame \"$name\"";
+              if ($mgStore->get($minigame->name) !== null) {
+                $oldName = $minigame->name;
+                $minigame->name = "{$minigame->name}_" . random_int(1000, 9999);
+                $this->notice = "A minigame by the name \"$oldName\" exists so \"{$minigame->name}\" was created instead";
               }
+
+              $this->notice ??= "Created Minigame \"{$minigame->name}\"";
               $mgStore->set($minigame);
               $this->sendTo($player);
             }
@@ -107,9 +107,16 @@ class MinigamesForm extends BaseForm
                   return;
                 }
                 $mgStore = Plugin::getInstance()->getMinigameStore();
-                if ($name !== $minigame->name) $mgStore->delete($name);
+                if ($name !== $minigame->name) {
+                  $mgStore->delete($name);
+                  if ($mgStore->get($minigame->name) !== null) {
+                    $oldName = $minigame->name;
+                    $minigame->name = "{$minigame->name}_" . random_int(1000, 9999);
+                    $this->notice = "A minigame by the name \"$oldName\" exists so \"{$minigame->name}\" was created instead";
+                  }
+                }
                 $mgStore->set($minigame);
-                $this->notice .= "Updated Minigame: \"{$minigame->name}\"";
+                $this->notice ??= "Updated Minigame: \"{$minigame->name}\"";
                 $this->sendTo($player);
               },
               $mg
