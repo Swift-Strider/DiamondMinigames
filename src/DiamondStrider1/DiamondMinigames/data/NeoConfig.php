@@ -20,14 +20,6 @@ class NeoConfig
     private string $filename,
     private string $class,
   ) {
-    if (is_dir($filename)) {
-      $context = new ConfigContext($filename);
-      throw new ConfigException("YAML file is a directory: §c\"§7{$filename}§c\"", $context);
-    }
-    if (!file_exists($filename)) {
-      file_put_contents($filename, yaml_emit([])); // Initialize YAML file
-      Plugin::getInstance()->getLogger()->debug("Made YAML file at \"$filename\"");
-    }
   }
 
   /**
@@ -56,10 +48,25 @@ class NeoConfig
     file_put_contents($this->filename, $contents);
   }
 
+  public function deleteFile(): void
+  {
+    if (!file_exists($this->filename)) return;
+    unlink($this->filename);
+  }
+
   /** @return array<string, mixed> */
   private function fetchData(): array
   {
     $context = new ConfigContext($this->filename);
+
+    if (is_dir($this->filename)) {
+      throw new ConfigException("YAML file is a directory: §c\"§7{$this->filename}§c\"", $context);
+    }
+    if (!file_exists($this->filename)) {
+      file_put_contents($this->filename, yaml_emit([])); // Initialize YAML file
+      Plugin::getInstance()->getLogger()->debug("Made YAML file at \"{$this->filename}\"");
+    }
+
     $contents = file_get_contents($this->filename);
     if ($contents === false) {
       throw new ConfigException("Could not load settings", $context);
