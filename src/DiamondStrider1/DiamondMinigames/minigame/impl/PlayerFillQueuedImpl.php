@@ -86,7 +86,7 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
       ],
-      $this->minigame->getPlayers()
+      [$player, ...$this->minigame->getPlayers()]
     );
 
     foreach ($this->minigame->getTeams() as $team) {
@@ -109,7 +109,7 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
       ],
-      $this->minigame->getPlayers()
+      [$player, ...$this->minigame->getPlayers()]
     );
     foreach ($this->minigame->getTeams() as $team)
       if ($team->hasPlayer($player)) $team->removePlayer($player);
