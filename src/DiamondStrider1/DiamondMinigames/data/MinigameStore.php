@@ -81,6 +81,6 @@ class MinigameStore
   {
     // $name cannot be a number like string("69") because
     // it will be converted to int(69) when used as an array key
-    return strlen($name) >= 1 && preg_match("/^[a-zA-Z0-9_]*[a-zA-Z_]$/", $name) === 1;
+    return strlen($name) >= 1 && preg_match("/^[a-zA-Z_][a-zA-Z0-9_]*$/", $name) === 1;
   }
 }
