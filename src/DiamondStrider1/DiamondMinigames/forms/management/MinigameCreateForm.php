@@ -6,12 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\forms\management;
 
 use Closure;
 use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
-use DiamondStrider1\DiamondMinigames\data\MinigameStore;
 use DiamondStrider1\DiamondMinigames\minigame\MinigameBlueprint;
-use dktapps\pmforms\CustomForm;
-use dktapps\pmforms\CustomFormResponse;
-use dktapps\pmforms\element\Input;
-use dktapps\pmforms\element\Label;
 use pocketmine\Player;
 
 class MinigameCreateForm
