@@ -27,7 +27,7 @@ class MinigameStore
 
   public function get(string $name, bool $reload = false): ?MinigameBlueprint
   {
-    return $this->getAll($reload)[$name] ?? null;
+    return $this->getAll($reload)[strtolower($name)] ?? null;
   }
 
   /** @return array<string, MinigameBlueprint> */
@@ -37,18 +37,20 @@ class MinigameStore
       $files = glob($this->folder . "/*.yml");
       if ($files === false) throw new ConfigException("Could not load minigames from folder");
       foreach ($files as $file) {
-        $name = substr(basename($file), 0, -4); // removes ".yml" from basename
-        $this->minigameConfigs[strtolower($name)] = new NeoConfig($file, MinigameBlueprint::class);
+        $conf = new NeoConfig($file, MinigameBlueprint::class);
+        try {
+          $name = $conf->getObject(true)->name;
+        } catch (ConfigException $e) {
+          Plugin::getInstance()->handleConfigException($e, false);
+          continue;
+        }
+        $this->minigameConfigs[strtolower($name)] = $conf;
       }
     }
     $minigames = [];
     foreach ($this->minigameConfigs as $name => $config) {
-      try {
-        $minigames[$name] = $config->getObject($reload);
-      } catch (ConfigException $e) {
-        Plugin::getInstance()->handleConfigException($e, false);
-        unset($this->minigameConfigs[$name]);
-      }
+      // ConfigExceptions will never happen because of code above
+      $minigames[$name] = $config->getObject();
     }
     return $minigames;
   }
@@ -67,9 +69,11 @@ class MinigameStore
 
   public function delete(string $name): void
   {
-    if (isset($this->minigameConfigs[$name])) unset($this->minigameConfigs[$name]);
-    if (!file_exists($file = "$this->folder/$name.yml")) return;
-    unlink($file);
+    $name = strtolower($name);
+    if (isset($this->minigameConfigs[$name])) {
+      $this->minigameConfigs[$name]->deleteFile();
+      unset($this->minigameConfigs[$name]);
+    }
   }
 
   public static function checkValidName(string $name): bool
