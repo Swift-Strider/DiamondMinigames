@@ -9,11 +9,11 @@ use DiamondStrider1\DiamondMinigames\minigame\Team;
 class MinigameEndHook extends BaseHook
 {
   public function __construct(
-    private Team $winner
+    private ?Team $winner
   ) {
   }
 
-  public function getWinningTeam(): Team
+  public function getWinningTeam(): ?Team
   {
     return $this->winner;
   }

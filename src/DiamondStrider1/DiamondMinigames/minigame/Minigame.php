@@ -79,7 +79,7 @@ class Minigame
     });
   }
 
-  public function endGame(Team $winningTeam): void
+  public function endGame(?Team $winningTeam): void
   {
     if ($this->state !== self::RUNNING) return;
     $hook = new MinigameEndHook($winningTeam);
