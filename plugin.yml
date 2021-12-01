@@ -11,3 +11,6 @@ permissions:
   diamondminigames.manage:
     description: Gives the power to fully manage diamondminigames
     default: op
+  diamondminigames.play:
+    description: Permission needed to play minigames
+    default: true

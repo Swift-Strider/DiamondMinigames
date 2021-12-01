@@ -10,6 +10,7 @@ use DiamondStrider1\DiamondMinigames\misc\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\MinigameStore;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
+use DiamondStrider1\DiamondMinigames\minigame\MinigameManager;
 use pocketmine\plugin\PluginBase;
 
 class Plugin extends PluginBase
@@ -17,8 +18,9 @@ class Plugin extends PluginBase
   private static Plugin $instance;
   /** @var NeoConfig<MainConfig> */
   private NeoConfig $mainConfig;
-  /** @var MinigameStore */
+  
   private MinigameStore $mgStore;
+  private MinigameManager $mgManager;
 
   public static function getInstance(): self
   {
@@ -31,6 +33,7 @@ class Plugin extends PluginBase
     $dataFolder = $this->getDataFolder();
     $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
     $this->mgStore = new MinigameStore($dataFolder . "minigames");
+    $this->mgManager = new MinigameManager;
   }
 
   public function onEnable()
@@ -38,6 +41,11 @@ class Plugin extends PluginBase
     CommandManager::init();
     FormSessions::registerHandlers();
     $this->reloadPlugin();
+  }
+
+  public function onDisable()
+  {
+    $this->mgManager->reset();
   }
 
   public function reloadPlugin(): void
@@ -50,6 +58,7 @@ class Plugin extends PluginBase
     }
 
     $this->mgStore->getAll(true);
+    $this->mgManager->reset();
   }
 
   public function handleConfigException(ConfigException $e, bool $fatal): void
@@ -74,5 +83,10 @@ class Plugin extends PluginBase
   public function getMinigameStore(): MinigameStore
   {
     return $this->mgStore;
+  }
+
+  public function getMinigameManager(): MinigameManager
+  {
+    return $this->mgManager;
   }
 }

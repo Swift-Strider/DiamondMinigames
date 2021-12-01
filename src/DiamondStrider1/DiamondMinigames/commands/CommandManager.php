@@ -13,6 +13,8 @@ class CommandManager
     $plugin = Plugin::getInstance();
     $plugin->getServer()->getCommandMap()->registerAll("diamondminigames", [
       new MainCommand("diamondminigames", "Open DiamondMinigames Management Form", ""),
+      new PlayCommand("play", "Join a minigame", "[minigame]", ["game"]),
+      new QuitCommand("quit", "Leave a minigame", ""),
     ]);
   }
 }
