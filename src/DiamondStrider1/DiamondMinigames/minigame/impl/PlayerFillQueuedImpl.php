@@ -82,11 +82,11 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
     $config->playerJoined->sendMessage(
       [
         '$player' => $player->getDisplayName(),
-        '$count' => (string) count($this->minigame->getPlayers()),
+        '$count' => (string) (count($this->minigame->getPlayers()) + 1),
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
       ],
-      [$player, ...$this->minigame->getPlayers()]
+      [$player, ...array_values($this->minigame->getPlayers())]
     );
 
     foreach ($this->minigame->getTeams() as $team) {
@@ -105,11 +105,11 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
     $config->playerLeft->sendMessage(
       [
         '$player' => $player->getDisplayName(),
-        '$count' => (string) count($this->minigame->getPlayers()),
+        '$count' => (string) (count($this->minigame->getPlayers()) - 1),
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
       ],
-      [$player, ...$this->minigame->getPlayers()]
+      [$player, ...array_values($this->minigame->getPlayers())]
     );
     foreach ($this->minigame->getTeams() as $team)
       if ($team->hasPlayer($player)) $team->removePlayer($player);
