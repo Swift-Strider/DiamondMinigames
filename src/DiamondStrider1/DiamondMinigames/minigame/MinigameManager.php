@@ -4,15 +4,39 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
+use DiamondStrider1\DiamondMinigames\minigame\events\MGPlayerRemoved;
+use DiamondStrider1\DiamondMinigames\minigame\events\MinigameEnd;
 use DiamondStrider1\DiamondMinigames\Plugin;
+use pocketmine\event\Listener;
 use pocketmine\Player;
 
-class MinigameManager
+class MinigameManager implements Listener
 {
   /** @var array<string, array<string, Minigame>> MGB->name => [id => Minigame] */
   private array $minigames = [];
-  /** @var array<string, Minigame> uuid => Minigame */
-  private array $playerMinigames = [];
+  /** @var array<string, MGPlayer> uuid => MGPlayer */
+  private array $mgPlayers = [];
+
+  public function onMGPlayerRemoved(MGPlayerRemoved $ev): void
+  {
+    unset($this->mgPlayers[$ev->getPlayer()->getID()]);
+  }
+
+  public function onMinigameEnd(MinigameEnd $ev): void
+  {
+    $mg = $ev->getMinigame();
+    $name = $mg->getBlueprint()->name;
+    $key = array_search($mg, $this->minigames[$name]);
+
+    foreach ($this->mgPlayers as $id => $player) {
+      if ($player->getMinigame() === $mg) {
+        unset($this->mgPlayers[$id]);
+      }
+    }
+    if ($key !== false) {
+      unset($this->minigames[$name][$key]);
+    }
+  }
 
   public function reset(): void
   {
@@ -22,12 +46,13 @@ class MinigameManager
       }
     }
     $this->minigames = [];
-    $this->playerMinigames = [];
+    $this->mgPlayers = [];
   }
 
   /** @return Minigame[] */
   public function getGames(): array
   {
+    // TODO: This does not get all MGs
     return array_map(function (array $pair): Minigame {
       return array_values($pair)[0];
     }, array_values($this->minigames));
@@ -41,20 +66,23 @@ class MinigameManager
     }
     if (!isset($this->minigames[$mgb->name])) {
       $this->minigames[$mgb->name] = ["xID" . random_int(1000, 9999) => $mg = new Minigame($mgb)];
-      if ($mg->addPlayer($player)->success()) {
-        $this->playerMinigames[$player->getRawUniqueId()] = $mg;
+      $mgPlayer = new MGPlayer($player, $mg);
+      if ($mg->addPlayer($mgPlayer)->success()) {
+        $this->mgPlayers[$mgPlayer->getID()] = $mgPlayer;
         return true;
       }
     } else {
       foreach ($this->minigames[$mgb->name] as $mg) {
-        if ($mg->addPlayer($player)->success()) {
-          $this->playerMinigames[$player->getRawUniqueId()] = $mg;
+        $mgPlayer = new MGPlayer($player, $mg);
+        if ($mg->addPlayer($mgPlayer)->success()) {
+          $this->mgPlayers[$mgPlayer->getID()] = $mgPlayer;
           return true;
         }
       }
       $this->minigames[$mgb->name] = ["xID" . random_int(1000, 9999) => $mg = new Minigame($mgb)];
-      if ($mg->addPlayer($player)->success()) {
-        $this->playerMinigames[$player->getRawUniqueId()] = $mg;
+      $mgPlayer = new MGPlayer($player, $mg);
+      if ($mg->addPlayer($mgPlayer)->success()) {
+        $this->mgPlayers[$mgPlayer->getID()] = $mgPlayer;
         return true;
       }
     }
@@ -66,16 +94,17 @@ class MinigameManager
   {
   }
 
-  public function getPlaying(Player $player): ?Minigame
+  public function getMGPlayer(Player $player): ?MGPlayer
   {
-    return $this->playerMinigames[$player->getRawUniqueId()] ?? null;
+    return $this->mgPlayers[$player->getRawUniqueId()] ?? null;
   }
 
   public function quitPlayer(Player $player): void
   {
-    if (isset($this->playerMinigames[$player->getRawUniqueId()])) {
-      $this->playerMinigames[$player->getRawUniqueId()]->removePlayer($player);
-      unset($this->playerMinigames[$player->getRawUniqueId()]);
+    if (isset($this->mgPlayers[$player->getRawUniqueId()])) {
+      $mgp = $this->mgPlayers[$player->getRawUniqueId()];
+      $mgp->getMinigame()->removePlayer($mgp);
+      unset($this->mgPlayers[$player->getRawUniqueId()]);
     }
   }
 }

@@ -7,11 +7,9 @@ namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 
 /**
- * A class implementing this can subscribe to
- * minigame hooks that are fired on a minigame.
- * 
- * In order for a function to be registered for a hook
- * it must take 1 argument that is an instanceof BaseHook
+ * A state-ful implementation of a strategy
+ * that can subscribe to minigame events
+ * by implementing \pocketmine\event\Listener
  */
 interface IStrategyImpl
 {

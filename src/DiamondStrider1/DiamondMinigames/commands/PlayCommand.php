@@ -22,7 +22,7 @@ class PlayCommand extends BaseCommand
     if (!($sender instanceof Player))
       throw new AssertionError('$sender is guaranteed to be a player');
     $mgManager = $this->getPlugin()->getMinigameManager();
-    if ($mgManager->getPlaying($sender)) {
+    if ($mgManager->getMGPlayer($sender)) {
       $sender->sendMessage("§cYou are in a game! You must use /quit to leave, first!");
       return;
     }

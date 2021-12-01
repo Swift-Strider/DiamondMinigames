@@ -6,11 +6,10 @@ namespace DiamondStrider1\DiamondMinigames\minigame;
 
 use AssertionError;
 use Closure;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\BaseHook;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameEndHook;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\MinigameStartHook;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerAddHook;
-use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
+use DiamondStrider1\DiamondMinigames\minigame\events\MGPlayerAdded;
+use DiamondStrider1\DiamondMinigames\minigame\events\MGPlayerRemoved;
+use DiamondStrider1\DiamondMinigames\minigame\events\MinigameEnd;
+use DiamondStrider1\DiamondMinigames\minigame\events\MinigameStart;
 use DiamondStrider1\DiamondMinigames\minigame\impl\BasePlayerFillImpl;
 use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
@@ -32,38 +31,26 @@ class Minigame
   private BasePlayerFillImpl $playerFill;
   /** @var IStrategyImpl[] */
   private array $strategies = [];
-  /** 
-   * @var Closure[][]
-   * @phpstan-var array<class-string<BaseHook>, array<Closure(BaseHook): void>>
-   */
-  private array $bindings = [];
 
   /** @var Team[] */
   private array $teams = [];
-  /** @var array<string, Player> uuid => Player */
+  /** @var array<string, MGPlayer> uuid => MGPlayer */
   private array $players = [];
 
-  public function __construct(MinigameBlueprint $blueprint)
-  {
+  public function __construct(
+    private MinigameBlueprint $blueprint
+  ) {
     $this->state = self::PENDING;
     [$this->playerFill, $this->strategies] = $blueprint->buildStrategies();
     $strategies = [$this->playerFill, ...$this->strategies];
     foreach ($strategies as $strategy) {
       $strategy->onInit($this);
-      $rStrategy = new ReflectionClass($strategy);
-      foreach ($rStrategy->getMethods(ReflectionMethod::IS_PUBLIC) as $rMethod) {
-        if ($rMethod->isStatic() || count($rMethod->getParameters()) !== 1) continue;
-
-        $type = $rMethod->getParameters()[0]->getType();
-        if ($type instanceof ReflectionNamedType) {
-          if (!class_exists($type->getName())) continue;
-          $type = new ReflectionClass($type->getName());
-          if (!$type->isSubclassOf(BaseHook::class)) continue;
-          $closure = $rMethod->getClosure($strategy);
-          if ($closure) $this->bindings[$type->getName()][] = $closure;
-        }
-      }
     }
+  }
+
+  public function getBlueprint(): MinigameBlueprint
+  {
+    return $this->blueprint;
   }
 
   /** @phpstan-return self::* */
@@ -75,37 +62,41 @@ class Minigame
   public function startGame(): void
   {
     if ($this->state !== self::PENDING) return;
-    $hook = new MinigameStartHook;
-    $this->processHook($hook, function (): void {
-      $this->state = self::RUNNING;
-    });
+    $this->state = self::RUNNING;
+    $event = new MinigameStart($this);
+    $event->call();
   }
 
   public function endGame(?Team $winningTeam): void
   {
-    if ($this->state !== self::RUNNING) {
+    if ($this->state === self::PENDING) {
       foreach ($this->players as $player) {
-        $player->sendMessage("§cThe game you were in was forcibly closed, sorry. :(");
+        $player->getPlayer()->sendMessage("§cThe game you were in was forcibly closed, sorry. :(");
         $this->removePlayer($player);
       }
-      $this->state = self::ENDED;
-    };
-    $hook = new MinigameEndHook($winningTeam);
-    $this->processHook($hook, function () use ($winningTeam): void {
-      $this->state = self::ENDED;
+    } else if ($this->state === self::RUNNING) {
       $config = Plugin::getInstance()->getMainConfig();
-      $config->gameEnded->sendMessage([], $this->players);
+      $config->gameEnded->sendMessage([], $this->getPlayers());
       if ($winningTeam) {
+
+        $names = array_map(function (MGPlayer $v): string {
+          return $v->getPlayer()->getDisplayName();
+        }, $winningTeam->getPlayers());
+
         $config->gameWinners->sendMessage([
-          '$winners' => implode(", ", $winningTeam->getPlayers())
-        ], $this->players);
+          '$winners' => implode(", ", $names)
+        ], $this->getPlayers());
       } else {
-        $config->gameClosed->sendMessage([], $this->players);
+        $config->gameClosed->sendMessage([], $this->getPlayers());
       }
-    });
+    }
+
+    $this->state = self::ENDED;
+    $event = new MinigameEnd($this);
+    $event->call();
   }
 
-  public function addPlayer(Player $player): Result
+  public function addPlayer(MGPlayer $player): Result
   {
     if ($this->hasPlayer($player)) return Result::error("Already In Game");
 
@@ -116,33 +107,40 @@ class Minigame
     if ($team === null)
       throw new AssertionError(get_class($this->playerFill) . 'did not provide a $team');
 
-    $this->players[$player->getRawUniqueId()] = $player;
-    $hook = new PlayerAddHook($player, $team);
-    $this->processHook($hook);
+    $this->players[$player->getID()] = $player;
+    (new MGPlayerAdded($player))->call();
 
     return Result::ok();
   }
 
-  public function hasPlayer(Player $player): bool
+  public function hasPlayer(MGPlayer $player): bool
   {
-    return array_search($player, $this->players, true) !== false;
+    return in_array($player, $this->players, true);
   }
 
   /**
    * @return bool false if the player is not in the game
    */
-  public function removePlayer(Player $player): bool
+  public function removePlayer(MGPlayer $player): bool
   {
-    if (!isset($this->players[$player->getRawUniqueId()])) return false;
+    if (!isset($this->players[$player->getID()])) return false;
     $this->playerFill->removePlayer($player);
-    $this->processHook(new PlayerRemoveHook($player));
-    unset($this->players[$player->getRawUniqueId()]);
+    (new MGPlayerRemoved($player))->call();
+    unset($this->players[$player->getID()]);
 
     return true;
   }
 
   /** @return array<string, Player> uuid => Player */
   public function getPlayers(): array
+  {
+    return array_map(function (MGPlayer $v): Player {
+      return $v->getPlayer();
+    }, $this->players);
+  }
+
+  /** @return array<string, MGPlayer> uuid => MGPlayer */
+  public function getMGPlayers(): array
   {
     return $this->players;
   }
@@ -152,7 +150,7 @@ class Minigame
   {
     $teams = [];
     foreach ($this->teams as $team) {
-      if (count($team->getPlayers()) > 0) $teams[] = $team;
+      if (!$team->isEliminated()) $teams[] = $team;
     }
     return $teams;
   }
@@ -167,27 +165,5 @@ class Minigame
   public function setTeams(array $teams): void
   {
     $this->teams = $teams;
-  }
-
-  /** @phpstan-var array<array{BaseHook, null|Closure(): void}> */
-  private array $hookQueue = [];
-  private bool $isProcessingHook = false;
-  /** @phpstan-param null|Closure(): void $cb */
-  public function processHook(BaseHook $hook, ?Closure $cb = null): void
-  {
-    if (!isset($this->bindings[get_class($hook)])) return;
-    $this->hookQueue[] = [$hook, $cb];
-    // processHook was called while processing a different hook
-    if ($this->isProcessingHook) return;
-
-    $this->isProcessingHook = true;
-    while ($value = array_shift($this->hookQueue)) {
-      [$hook, $cb] = $value;
-      foreach ($this->bindings[get_class($hook)] as $binding) {
-        ($binding)($hook);
-      }
-      if ($cb) ($cb)();
-    }
-    $this->isProcessingHook = false;
   }
 }

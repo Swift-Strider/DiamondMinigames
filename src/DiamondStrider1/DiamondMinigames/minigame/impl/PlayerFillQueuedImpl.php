@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 
+use DiamondStrider1\DiamondMinigames\minigame\MGPlayer;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\PlayerFillQueued;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
@@ -60,7 +61,7 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
   {
   }
 
-  public function addPlayer(Player $player): array
+  public function addPlayer(MGPlayer $player): array
   {
     if ($this->minigame->getState() !== Minigame::PENDING)
       return [Result::error("This game is no longer accepting players"), null];
@@ -81,12 +82,12 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
     $config = Plugin::getInstance()->getMainConfig();
     $config->playerJoined->sendMessage(
       [
-        '$player' => $player->getDisplayName(),
+        '$player' => $player->getPlayer()->getDisplayName(),
         '$count' => (string) (count($this->minigame->getPlayers()) + 1),
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
       ],
-      [$player, ...array_values($this->minigame->getPlayers())]
+      [$player->getPlayer(), ...array_values($this->minigame->getPlayers())]
     );
 
     foreach ($this->minigame->getTeams() as $team) {
@@ -99,12 +100,12 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
     return [Result::ok(), $sTeam];
   }
 
-  public function removePlayer(Player $player): void
+  public function removePlayer(MGPlayer $player): void
   {
     $config = Plugin::getInstance()->getMainConfig();
     $config->playerLeft->sendMessage(
       [
-        '$player' => $player->getDisplayName(),
+        '$player' => $player->getPlayer()->getDisplayName(),
         '$count' => (string) (count($this->minigame->getPlayers()) - 1),
         '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
         '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)

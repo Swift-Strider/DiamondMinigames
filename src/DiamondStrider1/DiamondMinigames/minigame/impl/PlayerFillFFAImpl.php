@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 
+use DiamondStrider1\DiamondMinigames\minigame\MGPlayer;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
 use pocketmine\Player;
@@ -22,7 +23,7 @@ class PlayerFillFFAImpl extends BasePlayerFillImpl
   {
   }
 
-  public function addPlayer(Player $player): array
+  public function addPlayer(MGPlayer $player): array
   {
     $team = new Team("FFA TEAM #" . (count($this->minigame->getTeams()) + 1));
     $this->minigame->setTeams([...$this->minigame->getTeams(), $team]);
@@ -30,7 +31,7 @@ class PlayerFillFFAImpl extends BasePlayerFillImpl
     return [Result::ok(), $team];
   }
 
-  public function removePlayer(Player $player): void
+  public function removePlayer(MGPlayer $player): void
   {
     $this->minigame->setTeams(array_filter(
       $this->minigame->getTeams(),

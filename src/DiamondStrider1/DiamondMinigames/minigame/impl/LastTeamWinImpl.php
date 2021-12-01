@@ -26,8 +26,8 @@ class LastTeamWinImpl implements IStrategyImpl, Listener
   public function onPlayerDeath(PlayerDeathEvent $ev): void
   {
     if ($this->minigame->getState() !== Minigame::RUNNING) return;
-    $died = $ev->getPlayer();
-    if (!$this->minigame->hasPlayer($died)) return;
+    $died = Plugin::getInstance()->getMinigameManager()->getMGPlayer($ev->getPlayer());
+    if (!$died || !$this->minigame->hasPlayer($died)) return;
 
     $this->minigame->removePlayer($died);
     if (count($aliveTeams = $this->minigame->getPlayingTeams()) === 1) {

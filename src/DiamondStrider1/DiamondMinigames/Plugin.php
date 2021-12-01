@@ -18,7 +18,7 @@ class Plugin extends PluginBase
   private static Plugin $instance;
   /** @var NeoConfig<MainConfig> */
   private NeoConfig $mainConfig;
-  
+
   private MinigameStore $mgStore;
   private MinigameManager $mgManager;
 
@@ -40,6 +40,7 @@ class Plugin extends PluginBase
   {
     CommandManager::init();
     FormSessions::registerHandlers();
+    $this->getServer()->getPluginManager()->registerEvents($this->mgManager, $this);
     $this->reloadPlugin();
   }
 
