@@ -46,7 +46,8 @@ class Minigame
   {
     $this->state = self::PENDING;
     [$this->playerFill, $this->strategies] = $blueprint->buildStrategies();
-    foreach ($this->strategies as $strategy) {
+    $strategies = [$this->playerFill, ...$this->strategies];
+    foreach ($strategies as $strategy) {
       $strategy->onInit($this);
       $rStrategy = new ReflectionClass($strategy);
       foreach ($rStrategy->getMethods(ReflectionMethod::IS_PUBLIC) as $rMethod) {
