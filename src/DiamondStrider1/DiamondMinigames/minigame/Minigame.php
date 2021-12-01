@@ -14,6 +14,7 @@ use DiamondStrider1\DiamondMinigames\minigame\hooks\PlayerRemoveHook;
 use DiamondStrider1\DiamondMinigames\minigame\impl\BasePlayerFillImpl;
 use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
+use DiamondStrider1\DiamondMinigames\Plugin;
 use pocketmine\Player;
 use ReflectionClass;
 use ReflectionMethod;
@@ -82,10 +83,25 @@ class Minigame
 
   public function endGame(?Team $winningTeam): void
   {
-    if ($this->state !== self::RUNNING) return;
-    $hook = new MinigameEndHook($winningTeam);
-    $this->processHook($hook, function (): void {
+    if ($this->state !== self::RUNNING) {
+      foreach ($this->players as $player) {
+        $player->sendMessage("§cThe game you were in was forcibly closed, sorry. :(");
+        $this->removePlayer($player);
+      }
       $this->state = self::ENDED;
+    };
+    $hook = new MinigameEndHook($winningTeam);
+    $this->processHook($hook, function () use ($winningTeam): void {
+      $this->state = self::ENDED;
+      $config = Plugin::getInstance()->getMainConfig();
+      $config->gameEnded->sendMessage([], $this->players);
+      if ($winningTeam) {
+        $config->gameWinners->sendMessage([
+          '$winners' => implode(", ", $winningTeam->getPlayers())
+        ], $this->players);
+      } else {
+        $config->gameClosed->sendMessage([], $this->players);
+      }
     });
   }
 
