@@ -52,10 +52,13 @@ class MinigameManager implements Listener
   /** @return Minigame[] */
   public function getGames(): array
   {
-    // TODO: This does not get all MGs
-    return array_map(function (array $pair): Minigame {
-      return array_values($pair)[0];
-    }, array_values($this->minigames));
+    $mgs = [];
+    foreach ($this->minigames as $games) {
+      foreach ($games as $mg) {
+        $mgs[] = $mg;
+      }
+    }
+    return $mgs;
   }
 
   public function send(Player $player, string $name): bool
