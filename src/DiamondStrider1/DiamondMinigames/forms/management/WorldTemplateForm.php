@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\forms\management;
 
+use Closure;
+use DiamondStrider1\DiamondMinigames\data\WorldTemplate;
 use DiamondStrider1\DiamondMinigames\forms\BaseForm;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
 use DiamondStrider1\DiamondMinigames\Plugin;
@@ -24,8 +26,17 @@ class WorldTemplateForm extends BaseForm
 {
   private ?string $notice = null;
 
+  /** @param Closure(?WorldTemplate): void $callback */
+  public function __construct(
+    private ?Closure $callback = null,
+  ) {
+  }
+
   protected function createForm(Player $player): Form
   {
+    if ($this->callback !== null) {
+      return $this->createNewForm();
+    }
     $options = [];
     $worlds = Plugin::getInstance()->getWorldTemplateManager()->getAll();
     $indexToName = [];
@@ -43,46 +54,7 @@ class WorldTemplateForm extends BaseForm
       function (Player $player, int $selectedOption) use ($option_count, $indexToName): void {
         $this->notice = null;
         if ($selectedOption === $option_count - 1) {
-          $worlds = Server::getInstance()->getDataPath() . "worlds";
-          $names = scandir($worlds);
-          if ($names === false) throw new AssumptionFailedError("Can't access worlds folder");
-          $names = array_values(array_filter($names, fn ($n) => $n !== "." && $n !== ".." && is_dir("$worlds/$n")));
-          $editor = new CustomForm(
-            "Configure World Template",
-            [
-              new Label("description", "All players in this world will be teleported away, so world data can be read"),
-              new Input("name", "Template's Name"),
-              new Dropdown("world", "World to Copy", $names)
-            ],
-            function (Player $player, CustomFormResponse $data) use ($names): void {
-              $world = $names[$data->getInt("world")];
-              $name = $data->getString("name");
-
-              $wm = Server::getInstance()->getWorldManager();
-              $w = $wm->getWorldByName($world);
-              if ($w !== null && $wm->getDefaultWorld() === $w) {
-                $this->notice = "The default world can't be made into a template, as it can't be unloaded. Consider changing the default world first.";
-                $this->sendTo($player);
-                return;
-              }
-
-              $wtm = Plugin::getInstance()->getWorldTemplateManager();
-              if ($wtm->get($name) !== null) {
-                $oldName = $name;
-                $name = "{$name}_" . random_int(1000, 9999);
-                $this->notice = "A World Template by the name \"$oldName\" exists so \"{$name}\" was created instead";
-              }
-
-              $this->notice ??= "Created World Template \"{$name}\"";
-              Plugin::getInstance()->getWorldTemplateManager()->add($name, $world);
-              $this->sendTo($player);
-            },
-            function (Player $player): void {
-              $this->sendTo($player);
-            }
-          );
-          $player->sendForm($editor);
-          return;
+          $player->sendForm($this->createNewForm());
         }
 
         $name = $indexToName[$selectedOption];
@@ -96,6 +68,56 @@ class WorldTemplateForm extends BaseForm
       },
       function (Player $player): void {
         FormSessions::sendPrevious($player);
+      }
+    );
+  }
+
+  private function createNewForm(): Form
+  {
+    $worlds = Server::getInstance()->getDataPath() . "worlds";
+    $names = scandir($worlds);
+    if ($names === false) throw new AssumptionFailedError("Can't access worlds folder");
+    $names = array_values(array_filter($names, fn ($n) => $n !== "." && $n !== ".." && is_dir("$worlds/$n")));
+    return new CustomForm(
+      "Configure World Template",
+      [
+        new Label("description", "All players in this world will be teleported away, so world data can be read"),
+        new Input("name", "Template's Name"),
+        new Dropdown("world", "World to Copy", $names)
+      ],
+      function (Player $player, CustomFormResponse $data) use ($names): void {
+        $world = $names[$data->getInt("world")];
+        $name = $data->getString("name");
+
+        $wm = Server::getInstance()->getWorldManager();
+        $w = $wm->getWorldByName($world);
+        if ($w !== null && $wm->getDefaultWorld() === $w) {
+          $this->notice = "The default world can't be made into a template, as it can't be unloaded. Consider changing the default world first.";
+          $this->sendTo($player);
+          return;
+        }
+
+        $wtm = Plugin::getInstance()->getWorldTemplateManager();
+        if ($wtm->get($name) !== null) {
+          $oldName = $name;
+          $name = "{$name}_" . random_int(1000, 9999);
+          $this->notice = "A World Template by the name \"$oldName\" exists so \"{$name}\" was created instead";
+        }
+
+        $this->notice ??= "Created World Template \"{$name}\"";
+        $template = Plugin::getInstance()->getWorldTemplateManager()->add($name, $world);
+        if ($this->callback !== null) {
+          ($this->callback)($template);
+          return;
+        }
+        $this->sendTo($player);
+      },
+      function (Player $player): void {
+        if ($this->callback !== null) {
+          ($this->callback)(null);
+          return;
+        }
+        $this->sendTo($player);
       }
     );
   }
@@ -167,7 +189,7 @@ class WorldTemplateForm extends BaseForm
               [
                 new Input("name", "The name of the new World")
               ],
-              function (Player $player, CustomFormResponse $data) use($name): void {
+              function (Player $player, CustomFormResponse $data) use ($name): void {
                 $template = Plugin::getInstance()->getWorldTemplateManager()->get($name);
                 if ($template === null) {
                   $this->notice = "Minigame World ($name) No Longer Exists";

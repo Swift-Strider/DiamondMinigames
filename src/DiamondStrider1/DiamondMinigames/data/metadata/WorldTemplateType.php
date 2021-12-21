@@ -9,6 +9,7 @@ use Closure;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use DiamondStrider1\DiamondMinigames\data\WorldTemplate;
+use DiamondStrider1\DiamondMinigames\forms\management\WorldTemplateForm;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use dktapps\pmforms\CustomForm;
 use dktapps\pmforms\CustomFormResponse;
@@ -48,10 +49,19 @@ class WorldTemplateType implements IValueType
       "Change Minigame World",
       [
         new Label("description", $this->description . "\n" . ($lastError ?? "")),
-        new Dropdown("world", "Choose a World", [...array_map(fn ($w) => $w->getName(), $worlds), "Create New"])
+        new Dropdown("world", "Choose a Minigame World", [...array_map(fn ($w) => $w->getName(), $worlds), "Create New"])
       ],
       function (Player $player, CustomFormResponse $data) use ($callback, $worlds): void {
-        $world = $worlds[$data->getInt("world")];
+        $world = $worlds[$data->getInt("world")] ?? null;
+        if ($world === null) {
+          $editor = new WorldTemplateForm(function (?WorldTemplate $template) use ($callback, $player): void {
+            if ($template !== null) ($callback)($template);
+            else
+              $player->sendForm($this->createForm(null, $callback));
+          });
+          $editor->sendTo($player);
+          return;
+        }
         ($callback)($world);
       },
       function (Player $player) use ($callback): void {
@@ -62,15 +72,14 @@ class WorldTemplateType implements IValueType
 
   public function shortString(mixed $value): string
   {
-    if (!is_string($value)) return "NOT SET";
-    return "\"$value\"";
+    if (!($value instanceof WorldTemplate)) return "NOT SET";
+    return "\"{$value->getName()}\"";
   }
 
   public function yamlLines(mixed $value, ConfigContext $context): string
   {
     if (!($value instanceof WorldTemplate)) throw new TypeError("\$value must be a World");
-    $value = str_replace(["\n", "\r"], ['\n', '\r'], $value->getName());
-    return "\"$value\"";
+    return "\"{$value->getName()}\"";
   }
 
   public function fromRaw(mixed $raw, ConfigContext $context): mixed
