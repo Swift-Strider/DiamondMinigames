@@ -20,8 +20,8 @@ class ManageForm extends BaseForm
   protected function createForm(Player $player): Form
   {
     return new MenuForm(
-      "Manage DiamondMinigames",
-      "This form manipulates DiamondMinigames's Configurations!" .
+      "Manage diamondMinigames",
+      "This form manipulates diamondMinigames's Configurations!" .
         ($this->notice ? "\n§3" . $this->notice : ""),
       [
         new MenuOption("Manage Minigames"),

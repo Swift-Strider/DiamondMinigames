@@ -2,7 +2,7 @@ main: DiamondStrider1\DiamondMinigames\Plugin
 api: 4.0.0
 version: 0.0.1
 
-name: DiamondMinigames
+name: diamondMinigames
 description: Make creative minigames for your server.
 website: https://github.com/Swift-Strider/DiamondMinigames
 author: DiamondStrider1
