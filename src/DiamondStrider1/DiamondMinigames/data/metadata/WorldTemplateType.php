@@ -86,7 +86,7 @@ class WorldTemplateType implements IValueType
   {
     if (!is_string($raw)) throw new ConfigException("Expected string", $context);
     $template = Plugin::getInstance()->getWorldTemplateManager()->get($raw);
-    if ($template === null) throw new ConfigException("The world \"$raw\" no longer exists");
+    if ($template === null) throw new ConfigException("The world \"$raw\" no longer exists", $context);
     return $template;
   }
 }
