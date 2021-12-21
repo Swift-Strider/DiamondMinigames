@@ -106,7 +106,7 @@ class ListType implements IValueType
     );
   }
 
-  /** 
+  /**
    * @phpstan-param array<int, T> $value
    * @phpstan-param Closure(array<int, T>|null): void $callback
    */
