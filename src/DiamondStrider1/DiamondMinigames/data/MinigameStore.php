@@ -34,7 +34,7 @@ class MinigameStore
   public function getAll(bool $reload = false): array
   {
     if ($reload === true) {
-      $this->minigameConfigs = []; // Reset 
+      $this->minigameConfigs = [];
       $files = glob($this->folder . "/*.yml");
       if ($files === false) throw new ConfigException("Could not load minigames from folder");
       foreach ($files as $file) {
