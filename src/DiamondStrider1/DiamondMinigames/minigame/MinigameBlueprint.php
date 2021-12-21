@@ -7,7 +7,9 @@ namespace DiamondStrider1\DiamondMinigames\minigame;
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
 use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
 use DiamondStrider1\DiamondMinigames\data\metadata\StringType;
+use DiamondStrider1\DiamondMinigames\data\metadata\WorldTemplateType;
 use DiamondStrider1\DiamondMinigames\data\MinigameStore;
+use DiamondStrider1\DiamondMinigames\data\WorldTemplate;
 use DiamondStrider1\DiamondMinigames\minigame\impl\BasePlayerFillImpl;
 use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\minigame\strategies\PlayerFillStrategy;
@@ -16,6 +18,8 @@ use DiamondStrider1\DiamondMinigames\misc\Result;
 
 class MinigameBlueprint implements IValidationProvider
 {
+  #[WorldTemplateType("world", "The template world is copied for players to join")]
+  public WorldTemplate $world;
   #[StringType("name", "The pretty name for the minigame")]
   public string $name;
   #[ObjectType(

@@ -25,6 +25,7 @@ class ManageForm extends BaseForm
         ($this->notice ? "\n§3" . $this->notice : ""),
       [
         new MenuOption("Manage Minigames"),
+        new MenuOption("Manage Minigame Worlds"),
         new MenuOption("Manage Config"),
         new MenuOption("Reload Plugin"),
       ],
@@ -36,6 +37,9 @@ class ManageForm extends BaseForm
             $this->openForm($player, new MinigamesForm);
             break;
           case 1:
+            $this->openForm($player, new WorldTemplateForm);
+            break;
+          case 2:
             $currentConfig = Plugin::getInstance()->getMainConfig();
             $formDescription = "This will be saved to config.yml immediately";
             $player->sendForm((new ObjectType(MainConfig::class, $formDescription))->createForm(
@@ -47,7 +51,7 @@ class ManageForm extends BaseForm
               }
             ));
             break;
-          case 2:
+          case 3:
             $time = microtime(true);
             Plugin::getInstance()->reloadPlugin();
             $diff = microtime(true) - $time;
