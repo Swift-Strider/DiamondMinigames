@@ -45,7 +45,7 @@ class WorldTemplateType implements IValueType
     $wtm = Plugin::getInstance()->getWorldTemplateManager();
     $worlds = array_values($wtm->getAll());
     return new CustomForm(
-      "Edit String",
+      "Change Minigame World",
       [
         new Label("description", $this->description . "\n" . ($lastError ?? "")),
         new Dropdown("world", "Choose a World", [...array_map(fn ($w) => $w->getName(), $worlds), "Create New"])
