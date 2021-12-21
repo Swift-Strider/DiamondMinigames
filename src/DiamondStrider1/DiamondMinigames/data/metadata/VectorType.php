@@ -42,7 +42,7 @@ class VectorType implements IValueType
   public function createForm($value, Closure $callback): Form
   {
     return new CustomForm(
-      "Edit String",
+      "Edit Location",
       [new Label("description", $this->description), new Input("vector", "")],
       function (Player $player, CustomFormResponse $data) use ($callback): void {
         $matches = [];
