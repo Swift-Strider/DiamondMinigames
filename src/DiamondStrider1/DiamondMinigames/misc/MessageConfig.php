@@ -6,7 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\misc;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
 use DiamondStrider1\DiamondMinigames\data\metadata\StringType;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class MessageConfig implements IValidationProvider
 {

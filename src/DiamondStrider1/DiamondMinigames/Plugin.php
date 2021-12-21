@@ -27,7 +27,7 @@ class Plugin extends PluginBase
     return self::$instance;
   }
 
-  public function onLoad()
+  protected function onLoad(): void
   {
     self::$instance = $this;
     $dataFolder = $this->getDataFolder();
@@ -36,7 +36,7 @@ class Plugin extends PluginBase
     $this->mgManager = new MinigameManager;
   }
 
-  public function onEnable()
+  protected function onEnable(): void
   {
     CommandManager::init();
     FormSessions::registerHandlers();
@@ -44,7 +44,7 @@ class Plugin extends PluginBase
     $this->reloadPlugin();
   }
 
-  public function onDisable()
+  protected function onDisable(): void
   {
     $this->mgManager->reset();
   }

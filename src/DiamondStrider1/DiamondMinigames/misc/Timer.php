@@ -6,6 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\misc;
 
 use Closure;
 use DiamondStrider1\DiamondMinigames\Plugin;
+use DomainException;
 use InvalidStateException;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\scheduler\TaskHandler;
@@ -39,11 +40,11 @@ class Timer
     if ($ticks > $totalTicks)
       throw new TypeError("\$ticks=$ticks is not less than \$totalTicks=$totalTicks");
     if ($this->isRunning())
-      throw new InvalidStateException("Attempt to start a running timer");
+      throw new DomainException("Attempt to start a running timer");
 
     $tickCount = 0;
     $this->task = Plugin::getInstance()->getScheduler()->scheduleRepeatingTask(
-      new ClosureTask(function (int $_currentTick) use (&$tickCount, $ticks, $totalTicks): void {
+      new ClosureTask(function () use (&$tickCount, $ticks, $totalTicks): void {
         $tickCount += $ticks;
         if ($tickCount < $totalTicks) {
           ($this->interval)();
@@ -59,7 +60,7 @@ class Timer
   public function stop(): void
   {
     if (!$this->isRunning())
-      throw new InvalidStateException("Attempt to stop a non-running timer");
+      throw new DomainException("Attempt to stop a non-running timer");
 
     $this->task->cancel();
   }

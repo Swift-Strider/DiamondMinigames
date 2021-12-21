@@ -14,7 +14,7 @@ use dktapps\pmforms\element\Input;
 use dktapps\pmforms\element\Label;
 use pocketmine\form\Form;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use TypeError;
 
 /**

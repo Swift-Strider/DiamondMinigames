@@ -7,7 +7,7 @@ namespace DiamondStrider1\DiamondMinigames\commands;
 use AssertionError;
 use DiamondStrider1\DiamondMinigames\forms\management\ManageForm;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class MainCommand extends BaseCommand
 {

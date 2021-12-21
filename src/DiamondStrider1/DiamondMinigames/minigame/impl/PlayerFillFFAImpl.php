@@ -7,7 +7,7 @@ namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 use DiamondStrider1\DiamondMinigames\minigame\MGPlayer;
 use DiamondStrider1\DiamondMinigames\minigame\Minigame;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 
 class PlayerFillFFAImpl extends BasePlayerFillImpl

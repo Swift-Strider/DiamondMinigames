@@ -7,7 +7,7 @@ namespace DiamondStrider1\DiamondMinigames\forms\management;
 use Closure;
 use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
 use DiamondStrider1\DiamondMinigames\minigame\MinigameBlueprint;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class MinigameCreateForm
 {

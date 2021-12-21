@@ -7,7 +7,7 @@ namespace DiamondStrider1\DiamondMinigames\minigame\impl;
 use DiamondStrider1\DiamondMinigames\minigame\MGPlayer;
 use DiamondStrider1\DiamondMinigames\minigame\Team;
 use DiamondStrider1\DiamondMinigames\misc\Result;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 abstract class BasePlayerFillImpl implements IStrategyImpl
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\forms;
 
 use pocketmine\form\Form;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 abstract class BaseForm
 {

@@ -12,7 +12,7 @@ use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
 use dktapps\pmforms\ModalForm;
 use pocketmine\form\Form;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use TypeError;
 
 /**
@@ -24,7 +24,7 @@ class ListType implements IValueType
 {
   /** @phpstan-var IValueType<T> */
   private IValueType $type;
-  
+
   public function __construct(
     private string $config_key = "<root>",
     private string $description = ""

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class MGPlayer
 {
@@ -23,7 +23,7 @@ class MGPlayer
 
   public function getID(): string
   {
-    return $this->player->getRawUniqueId();
+    return $this->player->getUniqueId()->getBytes();
   }
 
   public function getMinigame(): Minigame

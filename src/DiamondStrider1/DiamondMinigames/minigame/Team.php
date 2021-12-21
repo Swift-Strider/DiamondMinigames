@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class Team
 {

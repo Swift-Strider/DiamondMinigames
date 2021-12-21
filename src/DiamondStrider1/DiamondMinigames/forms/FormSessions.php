@@ -8,7 +8,7 @@ use DiamondStrider1\DiamondMinigames\Plugin;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class FormSessions
 {
@@ -21,12 +21,12 @@ class FormSessions
 
   public static function playerAdded(Player $player): void
   {
-    self::$playerSessions[$player->getRawUniqueId()] = new FormSessions;
+    self::$playerSessions[$player->getUniqueId()->getBytes()] = new FormSessions;
   }
 
   public static function playerRemoved(Player $player): void
   {
-    unset(self::$playerSessions[$player->getRawUniqueId()]);
+    unset(self::$playerSessions[$player->getUniqueId()->getBytes()]);
   }
 
   public static function registerHandlers(): void
@@ -55,12 +55,12 @@ class FormSessions
 
   public static function pushPrevious(Player $player, BaseForm $form): void
   {
-    self::$playerSessions[$player->getRawUniqueId()]->pushForm($form);
+    self::$playerSessions[$player->getUniqueId()->getBytes()]->pushForm($form);
   }
 
   public static function sendPrevious(Player $player): void
   {
-    $form = self::$playerSessions[$player->getRawUniqueId()]->popForm();
+    $form = self::$playerSessions[$player->getUniqueId()->getBytes()]->popForm();
     if ($form) {
       $form->sendTo($player);
     }

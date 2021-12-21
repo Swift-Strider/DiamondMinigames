@@ -8,7 +8,7 @@ use DiamondStrider1\DiamondMinigames\forms\BaseForm;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\form\Form;
 
 class PlayForm extends BaseForm

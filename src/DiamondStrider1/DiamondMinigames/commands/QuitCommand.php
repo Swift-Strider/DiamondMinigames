@@ -6,7 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\commands;
 
 use AssertionError;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class QuitCommand extends BaseCommand
 {
@@ -20,7 +20,7 @@ class QuitCommand extends BaseCommand
   {
     if (!($sender instanceof Player))
       throw new AssertionError('$sender is guaranteed to be a player');
-    $mgManager = $this->getPlugin()->getMinigameManager();
+    $mgManager = $this->getOwningPlugin()->getMinigameManager();
     if (!$mgManager->getMGPlayer($sender)) {
       $sender->sendMessage("§cYou aren't in a game right now");
     }

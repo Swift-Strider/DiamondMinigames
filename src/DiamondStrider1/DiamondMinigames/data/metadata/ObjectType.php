@@ -14,7 +14,7 @@ use dktapps\pmforms\MenuForm;
 use dktapps\pmforms\MenuOption;
 use dktapps\pmforms\ModalForm;
 use pocketmine\form\Form;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use ReflectionClass;
 use ReflectionProperty;
 use TypeError;
@@ -28,7 +28,7 @@ class ObjectType implements IValueType
 {
   /** @phpstan-var ClassInfo<T> */
   private ClassInfo $classInfo;
-  
+
   /**
    * @phpstan-param class-string<T> $class
    */

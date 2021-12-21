@@ -13,7 +13,7 @@ use dktapps\pmforms\CustomFormResponse;
 use dktapps\pmforms\element\Input;
 use dktapps\pmforms\element\Label;
 use pocketmine\form\Form;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * @phpstan-implements IValueType<float>

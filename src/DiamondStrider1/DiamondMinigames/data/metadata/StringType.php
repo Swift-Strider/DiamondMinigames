@@ -13,7 +13,7 @@ use dktapps\pmforms\CustomFormResponse;
 use dktapps\pmforms\element\Input;
 use dktapps\pmforms\element\Label;
 use pocketmine\form\Form;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * @phpstan-implements IValueType<string>
@@ -45,8 +45,7 @@ class StringType implements IValueType
       function (Player $player, CustomFormResponse $data) use ($callback): void {
         ($callback)($data->getString("string"));
       },
-      function (Player $player) use ($callback): void
-      {
+      function (Player $player) use ($callback): void {
         ($callback)(null);
       }
     );
