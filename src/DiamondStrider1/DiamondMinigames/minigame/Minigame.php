@@ -15,9 +15,6 @@ use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use pocketmine\player\Player;
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionNamedType;
 
 class Minigame
 {
