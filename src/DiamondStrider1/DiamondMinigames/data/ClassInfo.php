@@ -63,7 +63,7 @@ class ClassInfo
         $rAttr = new ReflectionClass($attr->getName());
         if (
           $rAttr->isSubclassOf(IValueType::class) &&
-          !$rAttr->isSubclassOf(ListType::class)
+          $rAttr->getName() !== ListType::class
         ) {
           $listType = $rProp->getAttributes(ListType::class)[0] ?? null;
           if ($listType) {
