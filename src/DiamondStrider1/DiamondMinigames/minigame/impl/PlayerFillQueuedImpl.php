@@ -11,7 +11,6 @@ use DiamondStrider1\DiamondMinigames\minigame\Team;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use DiamondStrider1\DiamondMinigames\misc\Timer;
 use DiamondStrider1\DiamondMinigames\Plugin;
-use pocketmine\player\Player;
 
 class PlayerFillQueuedImpl extends BasePlayerFillImpl
 {
