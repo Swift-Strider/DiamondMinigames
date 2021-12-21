@@ -67,10 +67,9 @@ class ClassInfo
         ) {
           $listType = $rProp->getAttributes(ListType::class)[0] ?? null;
           if ($listType) {
-            $inject = $listType->newInstance();
-            $otherArgs = $attr->getArguments() + $listType->getArguments();
             /** @var IValueType $other */
-            $other = new ($attr->getName())(...$otherArgs);
+            $other = $attr->newInstance();
+            $inject = $listType->newInstance();
             /** @var ListType $inject */
             $inject->setType($other);
           } else {
