@@ -6,11 +6,23 @@ namespace DiamondStrider1\DiamondMinigames\minigame\strategies;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IntType;
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
+use DiamondStrider1\DiamondMinigames\data\metadata\ListType;
+use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
+use DiamondStrider1\DiamondMinigames\data\metadata\VectorType;
 use DiamondStrider1\DiamondMinigames\minigame\impl\PlayerFillQueuedImpl;
+use DiamondStrider1\DiamondMinigames\minigame\Lobby;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 
 class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
 {
+  #[ObjectType(Lobby::class, "lobby", "The lobby used when players are in queue")]
+  public Lobby $lobby;
+
+  /** @var Vector3[] */
+  #[ListType("team-spawns", "Separate Spawns for each team")]
+  #[VectorType("", "Separate Spawns for each team")]
+  public array $teamSpawns;
+
   #[IntType(
     config_key: "max-teams",
     description: "The highest number of teams per game"
@@ -44,6 +56,9 @@ class PlayerFillQueued extends PlayerFillStrategy implements IValidationProvider
   public function isValid(): Result
   {
     $errors = [];
+    if (count($this->teamSpawns) !== $this->maxTeams) {
+      $errors[] = "The number of Team Spawns must be equal to Max Teams";
+    }
     if ($this->minTeams > $this->maxTeams) {
       $errors[] = "Min Teams MUST BE at most Max Teams";
     } elseif ($this->minTeams < 2) {

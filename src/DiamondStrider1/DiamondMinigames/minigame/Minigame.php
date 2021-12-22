@@ -15,6 +15,7 @@ use DiamondStrider1\DiamondMinigames\minigame\impl\IStrategyImpl;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use pocketmine\player\Player;
+use pocketmine\world\World;
 
 class Minigame
 {
@@ -29,6 +30,7 @@ class Minigame
   /** @var IStrategyImpl[] */
   private array $strategies = [];
 
+  private ?World $world = null;
   /** @var Team[] */
   private array $teams = [];
   /** @var array<string, MGPlayer> uuid => MGPlayer */
@@ -54,6 +56,11 @@ class Minigame
   public function getState(): int
   {
     return $this->state;
+  }
+
+  public function getWorld(): World
+  {
+    return $this->world ?? $this->world = $this->blueprint->world->create();
   }
 
   public function startGame(): void

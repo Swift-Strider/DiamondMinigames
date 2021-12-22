@@ -11,11 +11,14 @@ use DiamondStrider1\DiamondMinigames\minigame\Team;
 use DiamondStrider1\DiamondMinigames\misc\Result;
 use DiamondStrider1\DiamondMinigames\misc\Timer;
 use DiamondStrider1\DiamondMinigames\Plugin;
+use pocketmine\entity\Location;
+use pocketmine\world\World;
 
 class PlayerFillQueuedImpl extends BasePlayerFillImpl
 {
   private Minigame $minigame;
   private Timer $gameStart;
+  private ?World $lobby = null;
 
   public function __construct(
     private PlayerFillQueued $strategy
@@ -77,6 +80,10 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
       $sTeam = new Team("Team #" . (count($this->minigame->getTeams()) + 1));
     // Could not find or add a team
     if ($sTeam === null) return [Result::error("Could not find a suitable team"), null];
+
+    $this->lobby ??= $this->strategy->lobby->world->create();
+    $s = $this->strategy->lobby->spawn;
+    $player->getPlayer()->teleport(new Location($s->x, $s->y, $s->z, $this->lobby, 0, 0));
 
     $config = Plugin::getInstance()->getMainConfig();
     $config->playerJoined->sendMessage(

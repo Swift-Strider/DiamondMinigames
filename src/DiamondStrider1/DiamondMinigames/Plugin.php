@@ -9,6 +9,7 @@ use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use DiamondStrider1\DiamondMinigames\misc\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\MinigameStore;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
+use DiamondStrider1\DiamondMinigames\data\WorldTemplate;
 use DiamondStrider1\DiamondMinigames\data\WorldTemplateManager;
 use DiamondStrider1\DiamondMinigames\forms\FormSessions;
 use DiamondStrider1\DiamondMinigames\minigame\MinigameManager;
@@ -41,6 +42,7 @@ class Plugin extends PluginBase
 
   protected function onEnable(): void
   {
+    WorldTemplate::clearTempWorlds();
     CommandManager::init();
     FormSessions::registerHandlers();
     $this->getServer()->getPluginManager()->registerEvents($this->mgManager, $this);
@@ -50,6 +52,7 @@ class Plugin extends PluginBase
   protected function onDisable(): void
   {
     $this->mgManager->reset();
+    WorldTemplate::clearTempWorlds();
   }
 
   public function reloadPlugin(): void
