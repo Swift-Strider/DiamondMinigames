@@ -86,7 +86,7 @@ class ListType implements IValueType
             $player->sendForm($this->type->createForm(
               $value[$selectedOption - 2],
               function ($arrayValue) use ($value, $callback, $player, $selectedOption): void {
-                if ($arrayValue !== null) $value[$selectedOption] = $arrayValue;
+                if ($arrayValue !== null) $value[$selectedOption - 2] = $arrayValue;
                 $player->sendForm($this->createForm($value, $callback));
               }
             ));
