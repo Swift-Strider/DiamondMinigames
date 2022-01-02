@@ -12,7 +12,7 @@ use pocketmine\plugin\PluginOwned;
 
 abstract class BaseCommand extends Command implements PluginOwned
 {
-  protected bool $onlyPlayers;
+  protected bool $onlyPlayers = false;
 
   public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = [])
   {
