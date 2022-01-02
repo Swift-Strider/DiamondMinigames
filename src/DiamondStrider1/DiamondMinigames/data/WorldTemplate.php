@@ -24,7 +24,7 @@ class WorldTemplate
 
   public function create(?string $name = null): World
   {
-    if ($name === null) $name = "_temp_{$this->name}_" . Uuid::uuid4()->getBytes();
+    if ($name === null) $name = "_temp_{$this->name}_" . Uuid::uuid4()->getHex();
     $template = $this->wtm->getFolder() . "/$this->name";
     $dst = Server::getInstance()->getDataPath() . "worlds/$name";
     $wm = Server::getInstance()->getWorldManager();
