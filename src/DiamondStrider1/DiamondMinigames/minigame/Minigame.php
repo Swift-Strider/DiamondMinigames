@@ -104,12 +104,10 @@ class Minigame
   {
     if ($this->hasPlayer($player)) return Result::error("Already In Game");
 
-    [$result, $team] = $this->playerFill->addPlayer($player);
+    $result = $this->playerFill->addPlayer($player);
     if (!$result->success()) {
       return $result;
     }
-    if ($team === null)
-      throw new AssertionError(get_class($this->playerFill) . 'did not provide a $team');
 
     $this->players[$player->getID()] = $player;
     (new MGPlayerAdded($player))->call();

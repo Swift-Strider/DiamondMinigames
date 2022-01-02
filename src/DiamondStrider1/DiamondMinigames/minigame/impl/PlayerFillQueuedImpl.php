@@ -45,6 +45,7 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
           ],
           $this->minigame->getPlayers()
         );
+        $this->minigame->startGame();
       }
     );
   }
@@ -63,10 +64,10 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
   {
   }
 
-  public function addPlayer(MGPlayer $player): array
+  public function addPlayer(MGPlayer $player): Result
   {
     if ($this->minigame->getState() !== Minigame::PENDING)
-      return [Result::error("This game is no longer accepting players"), null];
+      return Result::error("This game is no longer accepting players");
     $sTeam = null;
     foreach ($this->minigame->getTeams() as $team) {
       if ($sTeam === null) $sTeam = $team;
@@ -76,14 +77,17 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
     if ($sTeam !== null && count($sTeam->getPlayers()) === $this->strategy->maxTeamMembers)
       $sTeam = null;
     // Add another team if possible
-    if ($sTeam === null && count($this->minigame->getTeams()) < $this->strategy->maxTeams)
+    if ($sTeam === null && count($this->minigame->getTeams()) < $this->strategy->maxTeams) {
       $sTeam = new Team("Team #" . (count($this->minigame->getTeams()) + 1));
+      $this->minigame->setTeams([...$this->minigame->getTeams(), $sTeam]);
+    }
     // Could not find or add a team
-    if ($sTeam === null) return [Result::error("Could not find a suitable team"), null];
+    if ($sTeam === null) return Result::error("Could not find a suitable team");
 
     $this->lobby ??= $this->strategy->lobby->world->create();
     $s = $this->strategy->lobby->spawn;
     $player->getPlayer()->teleport(new Location($s->x, $s->y, $s->z, $this->lobby, 0, 0));
+    $sTeam->addPlayer($player);
 
     $config = Plugin::getInstance()->getMainConfig();
     $config->playerJoined->sendMessage(
@@ -98,12 +102,12 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
 
     foreach ($this->minigame->getTeams() as $team) {
       if (count($team->getPlayers()) < $this->strategy->minTeamMembers) {
-        return [Result::ok(), $sTeam];
+        return Result::ok();
       }
     }
     if (!$this->gameStart->isRunning())
       $this->gameStart->start(20, $this->strategy->waitTime * 20);
-    return [Result::ok(), $sTeam];
+    return Result::ok();
   }
 
   public function removePlayer(MGPlayer $player): void

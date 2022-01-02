@@ -29,14 +29,16 @@ class PlayerFillFFAImpl extends BasePlayerFillImpl
   {
   }
 
-  public function addPlayer(MGPlayer $player): array
+  public function addPlayer(MGPlayer $player): Result
   {
     $team = new Team("FFA TEAM #" . (count($this->minigame->getTeams()) + 1));
     $this->minigame->setTeams([...$this->minigame->getTeams(), $team]);
     if ($this->minigame->getState() === Minigame::PENDING) $this->minigame->startGame();
+    /** @phpstan-ignore-next-line $max is guaranteed to be >= $min */
     $s = $this->strategy->spawns[random_int(0, count($this->strategy->spawns) - 1)];
     $player->getPlayer()->teleport(new Location($s->x, $s->y, $s->z, $this->minigame->getWorld(), 0, 0));
-    return [Result::ok(), $team];
+    $team->addPlayer($player);
+    return Result::ok();
   }
 
   public function removePlayer(MGPlayer $player): void
