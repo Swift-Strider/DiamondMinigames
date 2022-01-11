@@ -41,7 +41,7 @@ class MinigameManager implements Listener
 
   public function onPlayerQuit(PlayerQuitEvent $ev): void
   {
-    if ($mgPlayer = $this->getMGPlayer($ev->getPlayer())) {
+    if ($this->getMGPlayer($ev->getPlayer())) {
       $this->quitPlayer($ev->getPlayer());
     }
   }
