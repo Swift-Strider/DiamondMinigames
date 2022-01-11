@@ -97,6 +97,10 @@ class Minigame
       }
     }
 
+    foreach ($this->strategies as $strategy) {
+      $strategy->onDestroy();
+    }
+
     $this->state = self::ENDED;
     $event = new MinigameEnd($this);
     $event->call();
