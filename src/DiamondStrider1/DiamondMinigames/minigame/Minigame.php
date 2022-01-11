@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigame;
 
-use AssertionError;
-use Closure;
 use DiamondStrider1\DiamondMinigames\minigame\events\MGPlayerAdded;
 use DiamondStrider1\DiamondMinigames\minigame\events\MGPlayerRemoved;
 use DiamondStrider1\DiamondMinigames\minigame\events\MinigameEnd;
@@ -90,6 +88,10 @@ class Minigame
         $config->gameWinners->sendMessage([
           '$winners' => implode(", ", $names)
         ], $this->getPlayers());
+
+        foreach ($this->players as $player) {
+          $this->removePlayer($player);
+        }
       } else {
         $config->gameClosed->sendMessage([], $this->getPlayers());
       }
