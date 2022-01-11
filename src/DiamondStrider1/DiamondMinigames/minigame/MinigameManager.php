@@ -8,6 +8,7 @@ use DiamondStrider1\DiamondMinigames\minigame\events\MGPlayerRemoved;
 use DiamondStrider1\DiamondMinigames\minigame\events\MinigameEnd;
 use DiamondStrider1\DiamondMinigames\Plugin;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\player\Player;
 
 class MinigameManager implements Listener
@@ -35,6 +36,13 @@ class MinigameManager implements Listener
     }
     if ($key !== false) {
       unset($this->minigames[$name][$key]);
+    }
+  }
+
+  public function onPlayerQuit(PlayerQuitEvent $ev): void
+  {
+    if ($mgPlayer = $this->getMGPlayer($ev->getPlayer())) {
+      $this->quitPlayer($ev->getPlayer());
     }
   }
 
