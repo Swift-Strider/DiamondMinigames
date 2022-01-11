@@ -47,7 +47,7 @@ class Timer
       new ClosureTask(function () use (&$tickCount, $ticks, $totalTicks): void {
         $tickCount += $ticks;
         if ($tickCount < $totalTicks) {
-          ($this->interval)();
+          ($this->interval)($tickCount, $totalTicks);
         } else {
           ($this->finished)();
           $this->task->cancel();

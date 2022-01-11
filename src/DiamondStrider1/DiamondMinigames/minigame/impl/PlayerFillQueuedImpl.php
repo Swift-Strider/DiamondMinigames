@@ -24,10 +24,11 @@ class PlayerFillQueuedImpl extends BasePlayerFillImpl
     private PlayerFillQueued $strategy
   ) {
     $this->gameStart = new Timer(
-      function (): void {
+      function (int $ticksSoFar, int $totalTicksNeeded): void {
         $config = Plugin::getInstance()->getMainConfig();
         $config->gameStarting->sendMessage(
           [
+            '$time-left' => (string) ($totalTicksNeeded - $ticksSoFar) / 20,
             '$count' => (string) count($this->minigame->getPlayers()),
             '$min' => (string) ($this->strategy->minTeams * $this->strategy->minTeamMembers),
             '$max' => (string) ($this->strategy->maxTeams * $this->strategy->maxTeamMembers)
