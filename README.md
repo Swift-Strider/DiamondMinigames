@@ -3,7 +3,7 @@
 **DiamondMinigames gives you the power to make your dream minigame a reality.**
 My aim is to provide you with all the essentials for any minigame server including: _kits, win objectives, custom script handlers, and a whole lot more._
 
-**This is a pocketmine plugin for Minecraft Bedrock Edition.** Before using DiamondMinigames you will need a version of `pocketmine` of at least `v3.25.0`.
+**This is a pocketmine plugin for Minecraft Bedrock Edition.** Before using DiamondMinigames you will need a version of `pocketmine` of at least `v4.0.0`.
 
 Take a look at `Feature Checklist`, and `How to Use` for information and examples.
 
