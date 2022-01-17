@@ -14,7 +14,6 @@ use TypeError;
 
 /**
  * Class for running code periodically for a set amount of time
- * Mainly used by PlayerFillQueued's Impl to start the minigame
  */
 class Timer
 {
