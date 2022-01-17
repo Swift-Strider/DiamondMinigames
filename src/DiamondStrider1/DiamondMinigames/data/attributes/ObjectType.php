@@ -8,6 +8,7 @@ use Attribute;
 use DiamondStrider1\DiamondMinigames\data\ClassInfo;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
+use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
 use ReflectionProperty;
 use TypeError;
 

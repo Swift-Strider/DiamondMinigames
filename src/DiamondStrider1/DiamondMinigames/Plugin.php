@@ -7,12 +7,7 @@ namespace DiamondStrider1\DiamondMinigames;
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use DiamondStrider1\DiamondMinigames\misc\MainConfig;
-use DiamondStrider1\DiamondMinigames\data\MinigameStore;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
-use DiamondStrider1\DiamondMinigames\data\WorldTemplate;
-use DiamondStrider1\DiamondMinigames\data\WorldTemplateManager;
-use DiamondStrider1\DiamondMinigames\forms\FormSessions;
-use DiamondStrider1\DiamondMinigames\minigame\MinigameManager;
 use pocketmine\plugin\PluginBase;
 
 class Plugin extends PluginBase
@@ -20,10 +15,6 @@ class Plugin extends PluginBase
   private static Plugin $instance;
   /** @var NeoConfig<MainConfig> */
   private NeoConfig $mainConfig;
-
-  private WorldTemplateManager $worldTemplateManager;
-  private MinigameStore $mgStore;
-  private MinigameManager $mgManager;
 
   public static function getInstance(): self
   {
@@ -35,24 +26,16 @@ class Plugin extends PluginBase
     self::$instance = $this;
     $dataFolder = $this->getDataFolder();
     $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
-    $this->worldTemplateManager = new WorldTemplateManager($dataFolder . "templates");
-    $this->mgStore = new MinigameStore($dataFolder . "minigames");
-    $this->mgManager = new MinigameManager;
   }
 
   protected function onEnable(): void
   {
-    WorldTemplate::clearTempWorlds();
     CommandManager::init();
-    FormSessions::registerHandlers();
-    $this->getServer()->getPluginManager()->registerEvents($this->mgManager, $this);
     $this->reloadPlugin();
   }
 
   protected function onDisable(): void
   {
-    $this->mgManager->reset();
-    WorldTemplate::clearTempWorlds();
   }
 
   public function reloadPlugin(): void
@@ -63,10 +46,6 @@ class Plugin extends PluginBase
       $this->handleConfigException($e, true);
       return;
     }
-
-    $this->worldTemplateManager->getAll(true);
-    $this->mgStore->getAll(true);
-    $this->mgManager->reset();
   }
 
   public function handleConfigException(ConfigException $e, bool $fatal): void
@@ -86,20 +65,5 @@ class Plugin extends PluginBase
   public function getMainConfig(): MainConfig
   {
     return $this->mainConfig->getObject();
-  }
-
-  public function getWorldTemplateManager(): WorldTemplateManager
-  {
-    return $this->worldTemplateManager;
-  }
-
-  public function getMinigameStore(): MinigameStore
-  {
-    return $this->mgStore;
-  }
-
-  public function getMinigameManager(): MinigameManager
-  {
-    return $this->mgManager;
   }
 }
