@@ -20,10 +20,5 @@ class QuitCommand extends BaseCommand
   {
     if (!($sender instanceof Player))
       throw new AssertionError('$sender is guaranteed to be a player');
-    $mgManager = $this->getOwningPlugin()->getMinigameManager();
-    if (!$mgManager->getMGPlayer($sender)) {
-      $sender->sendMessage("§cYou aren't in a game right now");
-    }
-    $mgManager->quitPlayer($sender);
   }
 }
