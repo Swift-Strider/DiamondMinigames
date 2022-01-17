@@ -4,18 +4,10 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\data\metadata;
 
-use AssertionError;
 use Attribute;
-use Closure;
 use DiamondStrider1\DiamondMinigames\data\ClassInfo;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
-use dktapps\pmforms\MenuForm;
-use dktapps\pmforms\MenuOption;
-use dktapps\pmforms\ModalForm;
-use pocketmine\form\Form;
-use pocketmine\player\Player;
-use ReflectionClass;
 use ReflectionProperty;
 use TypeError;
 
@@ -48,121 +40,6 @@ class ObjectType implements IValueType
   public function getDescription(): string
   {
     return $this->description;
-  }
-
-  public function createForm($value, Closure $callback): Form
-  {
-    if ($this->classInfo->getSubtypes() !== null) {
-      return $this->createSubtypeForm($value, $callback);
-    }
-    return $this->createObjectForm($value, $callback);
-  }
-
-  /** 
-   * @phpstan-param T|null $value
-   * @phpstan-param Closure(T|null): void $callback
-   */
-  private function createSubtypeForm(?object $value, Closure $callback): Form
-  {
-    if ($this->classInfo->getSubtypes() === null)
-      throw new AssertionError("\$this->subtypes should not be null");
-    $options = [];
-    $indexToClass = [];
-    foreach ($this->classInfo->getSubtypes() as $name => $class) {
-      $indexToClass[] = $class;
-      $isUsed = $value && (new ReflectionClass($class))->isInstance($value);
-      $options[] = new MenuOption(($isUsed ? "§6" : "§8") . "$name");
-    }
-    return new MenuForm(
-      "Configuration",
-      $this->description,
-      $options,
-      function (
-        Player $player,
-        int $selectedOption
-      ) use ($value, $callback, $indexToClass): void {
-        $class = $indexToClass[$selectedOption];
-        /** @phpstan-var Closure(object|null): void $callback */
-        $player->sendForm((new self($class, description: $this->description))
-          ->createForm($value, $callback));
-      },
-      function (Player $player) use ($callback): void {
-        ($callback)(null);
-      }
-    );
-  }
-
-  /** 
-   * @phpstan-param T|null $value
-   * @phpstan-param Closure(T|null): void $callback
-   */
-  private function createObjectForm(?object $value, Closure $callback, ?string $lastError = null): Form
-  {
-    $value = $this->classInfo->isInstanceOf($value) ? clone $value : new $this->class;
-    foreach ($this->classInfo->getProps() as [$rProp, $inject]) {
-      /** @var ReflectionProperty $rProp */
-      /** @var IValueType $inject */
-      $valueString = $inject->shortString($rProp->isInitialized($value) ? $rProp->getValue($value) : null);
-      $options[] = new MenuOption("{$inject->getKey()} is $valueString");
-    }
-    $options[] = new MenuOption("Submit");
-    $option_count = count($options);
-    return new MenuForm(
-      "Configure Properties",
-      "Choose an option to get started" . ($lastError !== null ? "\n\n§4$lastError" : ""),
-      $options,
-      function (
-        Player $player,
-        int $selectedOption
-      ) use ($callback, $value, $option_count): void {
-        if ($selectedOption === $option_count - 1) {
-          foreach ($this->classInfo->getProps() as [$rProp]) {
-            if ($rProp->getValue($value) === null) {
-              $player->sendForm($this->createObjectForm(
-                $value,
-                $callback,
-                "You have not filled all properties!"
-              ));
-              return;
-            }
-          }
-          if ($value instanceof IValidationProvider) {
-            if (!($result = $value->isValid())->success()) {
-              /** @phpstan-var T $value */
-              $player->sendForm($this->createObjectForm(
-                $value,
-                $callback,
-                $result->getError()
-              ));
-              return;
-            }
-          }
-          /** @phpstan-var T $value */
-          ($callback)($value);
-          return;
-        }
-        [$rProp, $inject] = $this->classInfo->getProps()[$selectedOption];
-        /** @var ReflectionProperty $rProp */
-        /** @var IValueType $inject */
-        $player->sendForm($inject->createForm(
-          $rProp->isInitialized($value) ? $rProp->getValue($value) : null,
-          function ($propValue) use ($value, $callback, $player, $rProp): void {
-            if ($propValue !== null) $rProp->setValue($value, $propValue);
-            $player->sendForm($this->createObjectForm($value, $callback));
-          }
-        ));
-      },
-      function (Player $player) use ($value, $callback): void {
-        $player->sendForm(new ModalForm(
-          "Abandon all data?",
-          "Your changes will be lost!",
-          function (Player $player, bool $choice) use ($value, $callback): void {
-            if ($choice) ($callback)(null);
-            else $player->sendForm($this->createObjectForm($value, $callback));
-          }
-        ));
-      }
-    );
   }
 
   public function shortString(mixed $value): string

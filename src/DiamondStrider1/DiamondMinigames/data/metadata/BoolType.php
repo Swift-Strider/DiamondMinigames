@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\data\metadata;
 
 use Attribute;
-use Closure;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
-use dktapps\pmforms\CustomForm;
-use dktapps\pmforms\CustomFormResponse;
-use dktapps\pmforms\element\Label;
-use dktapps\pmforms\element\Toggle;
-use pocketmine\form\Form;
-use pocketmine\player\Player;
 
 /**
  * @phpstan-implements IValueType<bool>
@@ -35,20 +28,6 @@ class BoolType implements IValueType
   public function getDescription(): string
   {
     return $this->description;
-  }
-
-  public function createForm($value, Closure $callback): Form
-  {
-    return new CustomForm(
-      "Toggle Boolean",
-      [new Label("description", $this->description), new Toggle("boolean", "")],
-      function (Player $player, CustomFormResponse $data) use ($callback): void {
-        ($callback)($data->getBool("boolean"));
-      },
-      function (Player $player) use ($callback): void {
-        ($callback)(null);
-      }
-    );
   }
 
   public function shortString(mixed $value): string

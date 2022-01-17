@@ -5,16 +5,9 @@ declare(strict_types=1);
 namespace DiamondStrider1\DiamondMinigames\data\metadata;
 
 use Attribute;
-use Closure;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
-use dktapps\pmforms\CustomForm;
-use dktapps\pmforms\CustomFormResponse;
-use dktapps\pmforms\element\Input;
-use dktapps\pmforms\element\Label;
-use pocketmine\form\Form;
 use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 use TypeError;
 
 /**
@@ -37,35 +30,6 @@ class VectorType implements IValueType
   public function getDescription(): string
   {
     return $this->description;
-  }
-
-  public function createForm($value, Closure $callback): Form
-  {
-    return new CustomForm(
-      "Edit Location",
-      [new Label("description", $this->description), new Input("vector", "")],
-      function (Player $player, CustomFormResponse $data) use ($callback): void {
-        $matches = [];
-        preg_match(
-          '/(-?\d+(?:\.\d*)?) *, *(-?\d+(?:\.\d*)?) *, *(-?\d+(?:\.\d*)?)/',
-          $data->getString("vector"),
-          $matches
-        );
-        $rawVector = array_slice($matches, 1);
-        if (count($rawVector) < 3) {
-          ($callback)(null);
-          return;
-        }
-        ($callback)(new Vector3(
-          (float) $rawVector[0],
-          (float) $rawVector[1],
-          (float) $rawVector[2]
-        ));
-      },
-      function (Player $player) use ($callback): void {
-        ($callback)(null);
-      }
-    );
   }
 
   public function shortString(mixed $value): string
