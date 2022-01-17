@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\data\metadata;
+namespace DiamondStrider1\DiamondMinigames\data\attributes;
 
 use Attribute;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
 
 /**
- * @phpstan-implements IValueType<int>
+ * @phpstan-implements IValueType<float>
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class IntType implements IValueType
+class FloatType implements IValueType
 {
   public function __construct(
     private string $config_key,
@@ -32,7 +32,7 @@ class IntType implements IValueType
 
   public function shortString(mixed $value): string
   {
-    if (!is_int($value)) return "NOT SET";
+    if (!is_float($value)) return "NOT SET";
     return "$value";
   }
 
@@ -43,7 +43,7 @@ class IntType implements IValueType
 
   public function fromRaw(mixed $raw, ConfigContext $context): mixed
   {
-    if (!is_int($raw)) throw new ConfigException("Expected integer", $context);
+    if (!is_float($raw)) throw new ConfigException("Expected float", $context);
     return $raw;
   }
 }

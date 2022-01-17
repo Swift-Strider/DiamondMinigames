@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\data;
 
-use DiamondStrider1\DiamondMinigames\data\metadata\ObjectType;
+use DiamondStrider1\DiamondMinigames\data\attributes\ObjectType;
 use DiamondStrider1\DiamondMinigames\Plugin;
 
 /**

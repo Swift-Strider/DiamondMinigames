@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\data\metadata;
+namespace DiamondStrider1\DiamondMinigames\data\attributes;
 
 use Attribute;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
 
 /**
- * @phpstan-implements IValueType<float>
+ * @phpstan-implements IValueType<bool>
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class FloatType implements IValueType
+class BoolType implements IValueType
 {
   public function __construct(
     private string $config_key,
@@ -32,18 +32,18 @@ class FloatType implements IValueType
 
   public function shortString(mixed $value): string
   {
-    if (!is_float($value)) return "NOT SET";
-    return "$value";
+    if (!is_bool($value)) return "NOT SET";
+    return $value ? "ENABLED" : "DISABLED";
   }
 
   public function yamlLines(mixed $value, ConfigContext $context): string
   {
-    return (string) $value;
+    return $value ? "true" : "false";
   }
 
   public function fromRaw(mixed $raw, ConfigContext $context): mixed
   {
-    if (!is_float($raw)) throw new ConfigException("Expected float", $context);
+    if (!is_bool($raw)) throw new ConfigException("Expected boolean", $context);
     return $raw;
   }
 }

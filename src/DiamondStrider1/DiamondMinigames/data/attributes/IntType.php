@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\data\metadata;
+namespace DiamondStrider1\DiamondMinigames\data\attributes;
 
 use Attribute;
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
-use pocketmine\math\Vector3;
-use TypeError;
 
 /**
- * @phpstan-implements IValueType<Vector3>
+ * @phpstan-implements IValueType<int>
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class VectorType implements IValueType
+class IntType implements IValueType
 {
   public function __construct(
     private string $config_key,
@@ -34,21 +32,18 @@ class VectorType implements IValueType
 
   public function shortString(mixed $value): string
   {
-    if (!($value instanceof Vector3)) return "NOT SET";
-    return sprintf("(x: %.2f, y: %.2f, z: %.2f)", $value->x, $value->y, $value->z);
+    if (!is_int($value)) return "NOT SET";
+    return "$value";
   }
 
   public function yamlLines(mixed $value, ConfigContext $context): string
   {
-    if (!($value instanceof Vector3))
-      throw new TypeError("\$value is not a Vector3");
-    return sprintf("[%.6f, %.6f, %.6f]", $value->x, $value->y, $value->z);
+    return (string) $value;
   }
 
   public function fromRaw(mixed $raw, ConfigContext $context): mixed
   {
-    if (!is_array($raw) || count($raw) < 3)
-      throw new ConfigException("Expected Vector3 (list of 3 numbers)", $context);
-    return new Vector3((float) $raw[0], (float) $raw[1], (float) $raw[2]);
+    if (!is_int($raw)) throw new ConfigException("Expected integer", $context);
+    return $raw;
   }
 }

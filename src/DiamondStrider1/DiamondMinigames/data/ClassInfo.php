@@ -6,8 +6,8 @@ namespace DiamondStrider1\DiamondMinigames\data;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IDefaultProvider;
 use DiamondStrider1\DiamondMinigames\data\metadata\ISubtypeProvider;
-use DiamondStrider1\DiamondMinigames\data\metadata\IValueType;
-use DiamondStrider1\DiamondMinigames\data\metadata\ListType;
+use DiamondStrider1\DiamondMinigames\data\attributes\IValueType;
+use DiamondStrider1\DiamondMinigames\data\attributes\ListType;
 use ReflectionClass;
 use TypeError;
 

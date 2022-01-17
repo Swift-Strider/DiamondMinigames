@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\data\metadata;
+namespace DiamondStrider1\DiamondMinigames\data\attributes;
 
 use DiamondStrider1\DiamondMinigames\data\ConfigContext;
 
