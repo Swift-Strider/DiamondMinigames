@@ -6,8 +6,11 @@ namespace DiamondStrider1\DiamondMinigames;
 
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
+use DiamondStrider1\DiamondMinigames\data\FileStore;
 use DiamondStrider1\DiamondMinigames\misc\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
+use DiamondStrider1\DiamondMinigames\regions\RegionConfig;
+use DiamondStrider1\DiamondMinigames\regions\RegionManager;
 use pocketmine\plugin\PluginBase;
 
 class Plugin extends PluginBase
@@ -15,6 +18,7 @@ class Plugin extends PluginBase
   private static Plugin $instance;
   /** @var NeoConfig<MainConfig> */
   private NeoConfig $mainConfig;
+  private RegionManager $regionManager;
 
   public static function getInstance(): self
   {
@@ -26,6 +30,10 @@ class Plugin extends PluginBase
     self::$instance = $this;
     $dataFolder = $this->getDataFolder();
     $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
+
+    $regionConfig = new NeoConfig($dataFolder . "regions.yml", RegionConfig::class);
+    $worldBackups = new FileStore($dataFolder . "world_backups");
+    $this->regionManager = new RegionManager($regionConfig, $worldBackups);
   }
 
   protected function onEnable(): void
@@ -42,6 +50,12 @@ class Plugin extends PluginBase
   {
     try {
       $this->mainConfig->getObject(true);
+    } catch (ConfigException $e) {
+      $this->handleConfigException($e, true);
+      return;
+    }
+    try {
+      $this->regionManager->getAll(true);
     } catch (ConfigException $e) {
       $this->handleConfigException($e, true);
       return;
@@ -65,5 +79,10 @@ class Plugin extends PluginBase
   public function getMainConfig(): MainConfig
   {
     return $this->mainConfig->getObject();
+  }
+
+  public function getRegionManager(): RegionManager
+  {
+    return $this->regionManager;
   }
 }
