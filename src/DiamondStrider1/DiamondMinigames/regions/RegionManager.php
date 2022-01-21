@@ -8,6 +8,7 @@ use DiamondStrider1\DiamondMinigames\data\FileStore;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\World;
 use Ramsey\Uuid\Uuid;
 
@@ -61,5 +62,24 @@ class RegionManager
         });
         $this->regionConfig->setObject($regionConfig);
         $this->worldBackups->remove($region->backupID);
+    }
+
+    public function instantiateRegion(Region $region, string $worldFolderName = null): World
+    {
+        if ($worldFolderName === null) {
+            $worldFolderName = Uuid::uuid6()->getHex()->toString();
+        }
+
+        $worldFile = Server::getInstance()->getDataPath() . 'worlds/' . $worldFolderName;
+        $this->worldBackups->loadFile($region->backupID, $worldFile);
+
+        $wm = Server::getInstance()->getWorldManager();
+        $wm->loadWorld($worldFolderName);
+        $world = $wm->getWorldByName($worldFolderName);
+
+        if ($world === null)
+            throw new AssumptionFailedError("The world should be loaded");
+        
+        return $world;
     }
 }
