@@ -21,6 +21,17 @@ class RegionManager
     ) {
     }
 
+    public function get(string $id): ?Region
+    {
+        foreach ($this->getAll() as $region) {
+            if ($region->id === $id) {
+                return $region;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @return Region[]
      */
