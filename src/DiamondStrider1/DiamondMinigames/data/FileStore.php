@@ -53,6 +53,16 @@ class FileStore
         }
     }
 
+    public function loadFile(string $entryName, string $pathToCopyTo): void
+    {
+        $entryFile = $this->foldername . '/' . $entryName;
+        if (is_dir($entryFile)) {
+            self::recursiveCopy($entryFile, $pathToCopyTo);
+        } else {
+            copy($entryFile, $pathToCopyTo);
+        }
+    }
+
     private static function recursiveCopy(string $src, string $dst): void
     {
         $dir = dir($src);
