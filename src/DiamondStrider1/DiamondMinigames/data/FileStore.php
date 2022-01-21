@@ -44,7 +44,7 @@ class FileStore
         return $entries;
     }
 
-    public function copyFile(string $fileToCopy, string $newEntryName): void
+    public function saveFile(string $fileToCopy, string $newEntryName): void
     {
         if (is_dir($fileToCopy)) {
             self::recursiveCopy($fileToCopy, $this->foldername . '/' . $newEntryName);

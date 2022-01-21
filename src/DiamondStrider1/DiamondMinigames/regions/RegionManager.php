@@ -48,7 +48,7 @@ class RegionManager
         $this->regionConfig->setObject($regionConfig);
 
         $worldFile = Server::getInstance()->getDataPath() . 'worlds/' . $worldFolderName;
-        $this->worldBackups->copyFile($worldFile, $backupID);
+        $this->worldBackups->saveFile($worldFile, $backupID);
         return $region;
     }
 
