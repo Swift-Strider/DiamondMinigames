@@ -14,36 +14,36 @@ use DiamondStrider1\DiamondMinigames\data\ConfigException;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class IntType implements IValueType
 {
-  public function __construct(
-    private string $config_key,
-    private string $description
-  ) {
-  }
+    public function __construct(
+        private string $config_key,
+        private string $description
+    ) {
+    }
 
-  public function getKey(): string
-  {
-    return $this->config_key;
-  }
+    public function getKey(): string
+    {
+        return $this->config_key;
+    }
 
-  public function getDescription(): string
-  {
-    return $this->description;
-  }
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
 
-  public function shortString(mixed $value): string
-  {
-    if (!is_int($value)) return "NOT SET";
-    return "$value";
-  }
+    public function shortString(mixed $value): string
+    {
+        if (!is_int($value)) return "NOT SET";
+        return "$value";
+    }
 
-  public function yamlLines(mixed $value, ConfigContext $context): string
-  {
-    return (string) $value;
-  }
+    public function yamlLines(mixed $value, ConfigContext $context): string
+    {
+        return (string) $value;
+    }
 
-  public function fromRaw(mixed $raw, ConfigContext $context): mixed
-  {
-    if (!is_int($raw)) throw new ConfigException("Expected integer", $context);
-    return $raw;
-  }
+    public function fromRaw(mixed $raw, ConfigContext $context): mixed
+    {
+        if (!is_int($raw)) throw new ConfigException("Expected integer", $context);
+        return $raw;
+    }
 }

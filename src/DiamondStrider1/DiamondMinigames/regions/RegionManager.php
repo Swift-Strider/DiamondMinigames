@@ -39,7 +39,8 @@ class RegionManager
     /**
      * Creates a backup of an **unloaded** world and saves a region of it
      */
-    public function saveRegion(string $worldFolderName, Vector3 $start, Vector3 $end): Region {
+    public function saveRegion(string $worldFolderName, Vector3 $start, Vector3 $end): Region
+    {
         $id = Uuid::uuid4()->getHex()->toString();
         $backupID = Uuid::uuid4()->getHex()->toString();
         $region = new Region($id, $start, $end, $backupID);
@@ -79,7 +80,7 @@ class RegionManager
 
         if ($world === null)
             throw new AssumptionFailedError("The world should be loaded");
-        
+
         return $world;
     }
 }

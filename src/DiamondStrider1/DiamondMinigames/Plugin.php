@@ -15,74 +15,74 @@ use pocketmine\plugin\PluginBase;
 
 class Plugin extends PluginBase
 {
-  private static Plugin $instance;
-  /** @var NeoConfig<MainConfig> */
-  private NeoConfig $mainConfig;
-  private RegionManager $regionManager;
+    private static Plugin $instance;
+    /** @var NeoConfig<MainConfig> */
+    private NeoConfig $mainConfig;
+    private RegionManager $regionManager;
 
-  public static function getInstance(): self
-  {
-    return self::$instance;
-  }
-
-  protected function onLoad(): void
-  {
-    self::$instance = $this;
-    $dataFolder = $this->getDataFolder();
-    $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
-
-    $regionConfig = new NeoConfig($dataFolder . "regions.yml", RegionConfig::class);
-    $worldBackups = new FileStore($dataFolder . "world_backups");
-    $this->regionManager = new RegionManager($regionConfig, $worldBackups);
-  }
-
-  protected function onEnable(): void
-  {
-    CommandManager::init();
-    $this->reloadPlugin();
-  }
-
-  protected function onDisable(): void
-  {
-  }
-
-  public function reloadPlugin(): void
-  {
-    try {
-      $this->mainConfig->getObject(true);
-    } catch (ConfigException $e) {
-      $this->handleConfigException($e, true);
-      return;
+    public static function getInstance(): self
+    {
+        return self::$instance;
     }
-    try {
-      $this->regionManager->getAll(true);
-    } catch (ConfigException $e) {
-      $this->handleConfigException($e, true);
-      return;
+
+    protected function onLoad(): void
+    {
+        self::$instance = $this;
+        $dataFolder = $this->getDataFolder();
+        $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
+
+        $regionConfig = new NeoConfig($dataFolder . "regions.yml", RegionConfig::class);
+        $worldBackups = new FileStore($dataFolder . "world_backups");
+        $this->regionManager = new RegionManager($regionConfig, $worldBackups);
     }
-  }
 
-  public function handleConfigException(ConfigException $e, bool $fatal): void
-  {
-    $this->getLogger()->emergency("Error while Loading!\n\n§l§c{$e->getMessage()}\n");
-    foreach (explode("\n", $e->getTraceAsString()) as $line)
-      $this->getLogger()->debug("Stack Trace: §c" . $line);
-    if ($fatal)
-      $this->getServer()->getPluginManager()->disablePlugin($this);
-  }
+    protected function onEnable(): void
+    {
+        CommandManager::init();
+        $this->reloadPlugin();
+    }
 
-  public function setMainConfig(MainConfig $mainConfig): void
-  {
-    $this->mainConfig->setObject($mainConfig);
-  }
+    protected function onDisable(): void
+    {
+    }
 
-  public function getMainConfig(): MainConfig
-  {
-    return $this->mainConfig->getObject();
-  }
+    public function reloadPlugin(): void
+    {
+        try {
+            $this->mainConfig->getObject(true);
+        } catch (ConfigException $e) {
+            $this->handleConfigException($e, true);
+            return;
+        }
+        try {
+            $this->regionManager->getAll(true);
+        } catch (ConfigException $e) {
+            $this->handleConfigException($e, true);
+            return;
+        }
+    }
 
-  public function getRegionManager(): RegionManager
-  {
-    return $this->regionManager;
-  }
+    public function handleConfigException(ConfigException $e, bool $fatal): void
+    {
+        $this->getLogger()->emergency("Error while Loading!\n\n§l§c{$e->getMessage()}\n");
+        foreach (explode("\n", $e->getTraceAsString()) as $line)
+            $this->getLogger()->debug("Stack Trace: §c" . $line);
+        if ($fatal)
+            $this->getServer()->getPluginManager()->disablePlugin($this);
+    }
+
+    public function setMainConfig(MainConfig $mainConfig): void
+    {
+        $this->mainConfig->setObject($mainConfig);
+    }
+
+    public function getMainConfig(): MainConfig
+    {
+        return $this->mainConfig->getObject();
+    }
+
+    public function getRegionManager(): RegionManager
+    {
+        return $this->regionManager;
+    }
 }

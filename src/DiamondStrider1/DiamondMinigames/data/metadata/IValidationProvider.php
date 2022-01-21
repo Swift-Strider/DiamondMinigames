@@ -8,5 +8,5 @@ use DiamondStrider1\DiamondMinigames\misc\Result;
 
 interface IValidationProvider
 {
-  public function isValid(): Result;
+    public function isValid(): Result;
 }

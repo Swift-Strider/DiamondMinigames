@@ -70,8 +70,7 @@ class FileStore
         if (!file_exists($dst)) {
             mkdir($dst);
         }
-        while (($e = $dir->read()) !== false)
-        {
+        while (($e = $dir->read()) !== false) {
             if ($e === "." || $e === "..") continue;
             $file = $src . "/" . $e;
             if (is_dir($file) && !is_link($file)) {
@@ -82,7 +81,8 @@ class FileStore
         }
     }
 
-    public function remove(string $entryName): void {
+    public function remove(string $entryName): void
+    {
         $file = $this->foldername . '/' . $entryName;
         if (!file_exists($file)) {
             return;
@@ -99,8 +99,7 @@ class FileStore
     {
         $files = scandir($folder);
         if ($files === false) return;
-        foreach ($files as $e)
-        {
+        foreach ($files as $e) {
             if ($e === "." || $e === "..") continue;
             $file = $folder . "/" . $e;
             if (is_dir($file) && !is_link($file)) {

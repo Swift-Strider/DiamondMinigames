@@ -9,29 +9,29 @@ namespace DiamondStrider1\DiamondMinigames\misc;
  */
 class Result
 {
-  private function __construct(
-    private bool $success,
-    private string $error = "",
-  ) {
-  }
+    private function __construct(
+        private bool $success,
+        private string $error = "",
+    ) {
+    }
 
-  public function success(): bool
-  {
-    return $this->success;
-  }
+    public function success(): bool
+    {
+        return $this->success;
+    }
 
-  public function getError(): string
-  {
-    return $this->error;
-  }
+    public function getError(): string
+    {
+        return $this->error;
+    }
 
-  public static function ok(): Result
-  {
-    return new self(true);
-  }
+    public static function ok(): Result
+    {
+        return new self(true);
+    }
 
-  public static function error(string $message = ""): Result
-  {
-    return new self(false, $message);
-  }
+    public static function error(string $message = ""): Result
+    {
+        return new self(false, $message);
+    }
 }

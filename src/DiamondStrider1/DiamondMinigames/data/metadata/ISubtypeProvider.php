@@ -6,6 +6,6 @@ namespace DiamondStrider1\DiamondMinigames\data\metadata;
 
 interface ISubtypeProvider
 {
-  /** @phpstan-return array<string, class-string<static>> */
-  public static function getSubtypes(): array;
+    /** @phpstan-return array<string, class-string<static>> */
+    public static function getSubtypes(): array;
 }

@@ -9,19 +9,19 @@ namespace DiamondStrider1\DiamondMinigames\data\metadata;
  */
 interface IDefaultProvider
 {
-  /**
-   * @phpstan-return array<string, mixed>
-   * config-key => value
-   * 
-   * The values this function returns must be
-   * fully parsed.
-   * 
-   * Ex: The defaults in yaml
-   * ```yaml
-   * position: [0, 2, 4]
-   * ```
-   * would lead to `getDefaults()` returning
-   * `["position" => new Vector3(0, 2, 4)]`
-   */
-  public static function getDefaults(): array;
+    /**
+     * @phpstan-return array<string, mixed>
+     * config-key => value
+     * 
+     * The values this function returns must be
+     * fully parsed.
+     * 
+     * Ex: The defaults in yaml
+     * ```yaml
+     * position: [0, 2, 4]
+     * ```
+     * would lead to `getDefaults()` returning
+     * `["position" => new Vector3(0, 2, 4)]`
+     */
+    public static function getDefaults(): array;
 }
