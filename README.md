@@ -5,7 +5,7 @@ My aim is to provide you with all the essentials for any minigame server includi
 
 **This is a pocketmine plugin for Minecraft Bedrock Edition.** Before using DiamondMinigames you will need [`pocketmine`](https://github.com/pmmp/PocketMine-MP) `v4.0.0` or above.
 
-Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for information and examples.
+Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for information and examples. See [`Contributing and Question Asking`](#contributing-and-question-asking) for info on how to contribute and learn about this project.
 
 # Project TODOs
 
@@ -49,6 +49,6 @@ DiamondMinigames plans to support a win objective system. This allows you to con
 - You can set up other win objectives.
 - The first win objective to be met (including the last-team-standing rule) will **reward** the winning players and **end** the minigame.
 
-# Bug Reports and Help Requests
+# Contributing and Question Asking
 
 Go create an issue on Github for any concerns you may have, for any bug reports, questions of this plugin/project, or questions about contributing!
