@@ -22,6 +22,7 @@ Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for info
   - [ ] Design a modular minigame system
     - [ ] Support two types of minigames, `Queued` or `Ongoing`. See [`Minigame Types`](#minigame-types) below.
     - [ ] Support custom win-objectives. See [`Minigame Win Objectives`](#minigame-win-objectives) below.
+    - [ ] Support a service system, where services (eg. `ChestLootService`) depend on one or more configurations (eg. `ChestLootConfig`) to be present on the minigame to bind to it (eg. if `ChestLootConfig` put on the minigame, `ChestLootService` will fill chests with loot according to the schedule provided to `ChestLootConfig`). This will allow 3rd party plugins to easily interop with DiamondMinigames.
 
 ## Optimizations
 
