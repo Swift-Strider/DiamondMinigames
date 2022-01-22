@@ -7,6 +7,14 @@ My aim is to provide you with all the essentials for any minigame server includi
 
 Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for information and examples. See [`Contributing and Question Asking`](#contributing-and-question-asking) for info on how to contribute and learn about this project.
 
+### Table of Contents
+- [`Project TODOs`](#project-todos) lists features this project plans to add.
+  - [`Optimizations`](#optimizations) is a list of TODOs that will makes this project more efficient.
+- [`About`](#about) holds extra information on the core concepts of this plugin
+  - [`Minigame Types`](#minigame-types) details the two types of minigames this plugin supports
+  - [`Minigame Win Objectives`](#minigame-win-objectives) talks about win objectives thoroughly
+- [`Contributing and Question Asking`](#contributing-adn-question-asking) encourages you to use Github Issues for any problems you have or contributions you plan to make
+
 # Project TODOs
 
 - [ ] Support a basic minigame
