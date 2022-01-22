@@ -3,35 +3,52 @@
 **DiamondMinigames gives you the power to make your dream minigame a reality.**
 My aim is to provide you with all the essentials for any minigame server including: _kits, win objectives, custom script handlers, and a whole lot more._
 
-**This is a pocketmine plugin for Minecraft Bedrock Edition.** Before using DiamondMinigames you will need a version of `pocketmine` of at least `v4.0.0`.
+**This is a pocketmine plugin for Minecraft Bedrock Edition.** Before using DiamondMinigames you will need [`pocketmine`](https://github.com/pmmp/PocketMine-MP) `v4.0.0` or above.
 
-Take a look at `Feature Checklist`, and `How to Use` for information and examples.
+Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for information and examples.
 
-# Feature Checklist
+# Project TODOs
 
-**[Not Implemented]** Provides kits on game start with a selection menu when multiple kits are available.
+- [ ] Support a basic minigame
+  - [x] Create a region manager to backup and save parts of worlds for minigames
+  - [ ] Design a modular minigame system
+    - [ ] Support two types of minigames, `Queued` or `Ongoing`. See [`Minigame Types`](#minigame-types) below.
+    - [ ] Support custom win-objectives. See [`Minigame Win Objectives`](#minigame-win-objectives) below.
 
-**[Not Implemented]** Lets you, the server admin, create basic minigames. This includes auto-filling chests with items (Duels, Skywars)
+## Optimizations
 
-**[Not Implemented]** Gives you scripting tools to make more complex games. (Bedwars)
+|    System     | Imrovements                                                                                                                                     |
+| :-----------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| RegionManager | <ul><li>[ ] Save only the region selected, not the whole world file</li><li>[ ] Compress the world file, depending on a config option</li></ul> |
 
-# How to Use
+# About
 
-**TODO:** _The features in this section have yet to be implemented._
+The next sections talk about the core concepts of the DiamondMinigames project.
 
-**Strategies** are how you tell DiamondMinigames how to handle your complex minigames.
-Strategies come in multiple flavors like: `PlayerFillStrategy`, `KitStrategy`, and `WinStrategy`.
+## Minigame Types
 
-Imagine that you just had to have a good 1vs1 game for your server. You should employ the following:
+A checked box means the minigame type has been implemented.
 
-- `TeamFill` with 2 teams and 1 player per team
-- `KitVote` or `KitChoice`.
-  - `KitVote` forces the kit with the popular vote to be used or a random selection of the kits that tied.
-  - `KitChoice` allows every player to choose their own kit regardless of other players' votes
-- `LastTeamStanding` to reward a team with a win after killing all other teams. In this scenario `LastTeamStanding` will be taken into effect after the first kill.
+- [ ] Queued
+  - The player count is determined and fixed when the game starts (Think of BedWars).
+  - Throughout the game players are eliminated, disqualifying them for a win.
+  - Players may only rejoin after quitting this minigame, and will become a spectator if leaving the game caused them to be eliminated.
+  - If all but one team is eliminated, that one team wins the game.
+- [ ] Ongoing:
+  - Players can join this game after it started unlike `Queued`.
+  - These types of games may or may not have a win objective.
+  - Players cannot be eliminated, so by default there is no winning (Think of SkyBlock)
 
-There are many other strategies that you can use to build your own custom minigame from the ground up. Look at [STRATEGIES.md](guides/STRATEGIES.md) to bolster your knowledge.
+For both types of minigames, once a win objective is met, the player/party is rewarded and the game ends.
+
+## Minigame Win Objectives
+
+DiamondMinigames plans to support a win objective system. This allows you to configure many ways that a player might win. The first win objective to be met will end the game.
+
+- In a Queued minigame (see [Minigame Types](#minigame-types)) by default players win when they're team is the last to be eliminated, aka last team standing.
+- You can set up other win objectives.
+- The first win objective to be met (including the last-team-standing rule) will **reward** the winning players and **end** the minigame.
 
 # Bug Reports and Help Requests
 
-Go create an issue on Github for any concerns you may have.
+Go create an issue on Github for any concerns you may have, for any bug reports, questions of this plugin/project, or questions about contributing!
