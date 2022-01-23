@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\data\metadata;
 
-use DiamondStrider1\DiamondMinigames\misc\Result;
+use DiamondStrider1\DiamondMinigames\data\ConfigContext;
+use DiamondStrider1\DiamondMinigames\data\ConfigException;
 
 interface IValidationProvider
 {
-    public function isValid(): Result;
+    /**
+     * @throws ConfigException when validation fails
+     */
+    public function validate(ConfigContext $context): void;
 }

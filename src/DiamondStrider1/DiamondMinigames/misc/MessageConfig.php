@@ -6,6 +6,8 @@ namespace DiamondStrider1\DiamondMinigames\misc;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
 use DiamondStrider1\DiamondMinigames\data\attributes\StringType;
+use DiamondStrider1\DiamondMinigames\data\ConfigContext;
+use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use pocketmine\player\Player;
 
 class MessageConfig implements IValidationProvider
@@ -19,17 +21,15 @@ class MessageConfig implements IValidationProvider
     ) {
     }
 
-    public function isValid(): Result
+    public function validate(ConfigContext $context): void
     {
         switch ($this->display) {
             case "none":
             case "chat":
             case "actionbar":
-                return Result::ok();
+                break;
             default:
-                return Result::error(
-                    "The key `display` must be none, chat, or actionbar.\n" . "{$this->display} is not valid"
-                );
+                throw new ConfigException("The key `display` must be none, chat, or actionbar.\n" . "{$this->display} is not valid", $context);
         }
     }
 

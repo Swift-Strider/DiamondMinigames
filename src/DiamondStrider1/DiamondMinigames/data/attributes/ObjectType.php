@@ -118,14 +118,16 @@ class ObjectType implements IValueType
                 if (($defaults = $this->classInfo->getDefaults()) === null)
                     throw new ConfigException("Property Key \"{$inject->getKey()}\" is missing.", $context);
                 $parsed = $defaults[$inject->getKey()];
+                if ($parsed instanceof IValidationProvider) {
+                    $parsed->validate($context->addKey($inject->getKey()));
+                }
             } else {
                 $parsed = $inject->fromRaw($propValue, $context->addKey($inject->getKey()));
             }
             $rProp->setValue($object, $parsed);
         }
         if ($object instanceof IValidationProvider) {
-            if (!($res = $object->isValid())->success())
-                throw new ConfigException($res->getError(), $context);
+            $object->validate($context);
         }
         /** @phpstan-var T $object */
         return $object;
