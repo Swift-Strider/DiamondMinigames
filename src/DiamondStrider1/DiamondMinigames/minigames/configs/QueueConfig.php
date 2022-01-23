@@ -6,7 +6,7 @@ namespace DiamondStrider1\DiamondMinigames\minigames\configs;
 
 use DiamondStrider1\DiamondMinigames\data\attributes\IntType;
 
-class QueueConfig
+class QueueConfig extends BaseConfig
 {
     #[IntType("teams", "The number of teams in this game")]
     public int $teams;
