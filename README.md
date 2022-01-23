@@ -1,11 +1,14 @@
 # Welcome to DiamondMinigames
 
-**DiamondMinigames gives you the power to make your dream minigame a reality.**
-My aim is to provide you with all the essentials for any minigame server including: _kits, win objectives, custom script handlers, and a whole lot more._
+<p align="center"><strong>DiamondMinigames gives you the power to make your dream minigame a reality.</strong></p>
 
-**This is a pocketmine plugin for Minecraft Bedrock Edition.** Before using DiamondMinigames you will need [`pocketmine`](https://github.com/pmmp/PocketMine-MP) `v4.0.0` or above.
+My aim is to provide you with all the essentials for any minigame server including: <em>kits, win objectives, custom script handlers, and a whole lot more.</em>
 
-Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for information and examples. See [`Contributing and Question Asking`](#contributing-and-question-asking) for info on how to contribute and learn about this project.
+<p align="center"><strong>This is a <a href="https://github.com/pmmp/PocketMine-MP"><code>pocketmine v4</code></a> plugin for Minecraft Bedrock Edition.</strong></p>
+
+<p align="center"><strong>Take a look at <a href="#project-todos"><code>Project TODOs</code></a>, and <a href="#about"><code>About</code></a> for information and examples.</strong></p>
+
+<p align="center"><strong>See <a href="#contributing-and-question-asking"><code>Contributing and Question Asking</code></a> for info on how to contribute and learn about this project.</strong></p>
 
 ### Table of Contents
 
