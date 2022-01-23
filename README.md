@@ -21,7 +21,7 @@ Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for info
   - [x] Create a region manager to backup and save parts of worlds for minigames
   - [ ] Design a modular minigame system
     - [ ] Support custom win-objectives. See [`Minigame Win Objectives`](#minigame-win-objectives) below.
-    - [ ] Support a service system, where services (eg. `ChestLootService`) depend on one or more configurations (eg. `ChestLootConfig`) to be present on the minigame to bind to it (eg. if `ChestLootConfig` put on the minigame, `ChestLootService` will fill chests with loot according to the schedule provided to `ChestLootConfig`). This will allow 3rd party plugins to easily interop with DiamondMinigames.
+    - [ ] Support a service system, where services (eg. `ChestLootService`) depend on one or more configurations (eg. `ChestLootConfig`) to be present on the minigame to bind to it (eg. if `ChestLootConfig` put on the minigame, `ChestLootService` will fill chests with loot according to the schedule provided to `ChestLootConfig`). This will allow 3rd party plugins to easily interop with DiamondMinigames. See [`Minigame Services`](#minigame-services)
 
 ## Optimizations
 
@@ -33,13 +33,13 @@ Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for info
 
 The next sections talk about the core concepts of the DiamondMinigames project.
 
+## Minigame Services
+
+These are the building blocks of your minigames. Services may do any combinations of adding mechanics (point scoring), win-objectives (win after scoring 50 points), and play-things (a chest, with restocking loot),
+
 ## Minigame Win Objectives
 
-DiamondMinigames plans to support a win objective system. This allows you to configure many ways that a player might win. The first win objective to be met will end the game.
-
-- In a Queued minigame (see [Minigame Types](#minigame-types)) by default players win when they're team is the last to be eliminated, aka last team standing.
-- You can set up other win objectives.
-- The first win objective to be met (including the last-team-standing rule) will **reward** the winning players and **end** the minigame.
+DiamondMinigames plans to support a win objective system. This allows you to configure many ways that your players might win. The first win objective to be met will **reward** the winning players and **end** the minigame.
 
 # Contributing and Question Asking
 
