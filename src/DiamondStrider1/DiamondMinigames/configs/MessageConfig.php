@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DiamondStrider1\DiamondMinigames\misc;
+namespace DiamondStrider1\DiamondMinigames\configs;
 
 use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
 use DiamondStrider1\DiamondMinigames\data\attributes\StringType;

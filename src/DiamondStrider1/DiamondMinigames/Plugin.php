@@ -7,7 +7,7 @@ namespace DiamondStrider1\DiamondMinigames;
 use DiamondStrider1\DiamondMinigames\commands\CommandManager;
 use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use DiamondStrider1\DiamondMinigames\data\FileStore;
-use DiamondStrider1\DiamondMinigames\misc\MainConfig;
+use DiamondStrider1\DiamondMinigames\configs\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
 use DiamondStrider1\DiamondMinigames\regions\RegionConfig;
 use DiamondStrider1\DiamondMinigames\regions\RegionManager;
