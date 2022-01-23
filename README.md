@@ -8,6 +8,7 @@ My aim is to provide you with all the essentials for any minigame server includi
 Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for information and examples. See [`Contributing and Question Asking`](#contributing-and-question-asking) for info on how to contribute and learn about this project.
 
 ### Table of Contents
+
 - [`Project TODOs`](#project-todos) lists features this project plans to add.
   - [`Optimizations`](#optimizations) is a list of TODOs that will makes this project more efficient.
 - [`About`](#about) holds extra information on the core concepts of this plugin
