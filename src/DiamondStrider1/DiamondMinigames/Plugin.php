@@ -9,6 +9,7 @@ use DiamondStrider1\DiamondMinigames\data\ConfigException;
 use DiamondStrider1\DiamondMinigames\data\FileStore;
 use DiamondStrider1\DiamondMinigames\configs\MainConfig;
 use DiamondStrider1\DiamondMinigames\data\NeoConfig;
+use DiamondStrider1\DiamondMinigames\minigames\services\MinigameServices;
 use DiamondStrider1\DiamondMinigames\regions\RegionConfig;
 use DiamondStrider1\DiamondMinigames\regions\RegionManager;
 use pocketmine\plugin\PluginBase;
@@ -39,6 +40,7 @@ class Plugin extends PluginBase
     protected function onEnable(): void
     {
         CommandManager::init();
+        MinigameServices::registerDefaults();
         $this->reloadPlugin();
     }
 
