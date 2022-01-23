@@ -12,7 +12,6 @@ Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for info
 - [`Project TODOs`](#project-todos) lists features this project plans to add.
   - [`Optimizations`](#optimizations) is a list of TODOs that will makes this project more efficient.
 - [`About`](#about) holds extra information on the core concepts of this plugin
-  - [`Minigame Types`](#minigame-types) details the two types of minigames this plugin supports
   - [`Minigame Win Objectives`](#minigame-win-objectives) talks about win objectives thoroughly
 - [`Contributing and Question Asking`](#contributing-adn-question-asking) encourages you to use Github Issues for any problems you have or contributions you plan to make
 
@@ -21,7 +20,6 @@ Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for info
 - [ ] Support a basic minigame
   - [x] Create a region manager to backup and save parts of worlds for minigames
   - [ ] Design a modular minigame system
-    - [ ] Support two types of minigames, `Queued` or `Ongoing`. See [`Minigame Types`](#minigame-types) below.
     - [ ] Support custom win-objectives. See [`Minigame Win Objectives`](#minigame-win-objectives) below.
     - [ ] Support a service system, where services (eg. `ChestLootService`) depend on one or more configurations (eg. `ChestLootConfig`) to be present on the minigame to bind to it (eg. if `ChestLootConfig` put on the minigame, `ChestLootService` will fill chests with loot according to the schedule provided to `ChestLootConfig`). This will allow 3rd party plugins to easily interop with DiamondMinigames.
 
@@ -34,22 +32,6 @@ Take a look at [`Project TODOs`](#project-todos), and [`About`](#about) for info
 # About
 
 The next sections talk about the core concepts of the DiamondMinigames project.
-
-## Minigame Types
-
-A checked box means the minigame type has been implemented.
-
-- [ ] Queued
-  - The player count is determined and fixed when the game starts (Think of BedWars).
-  - Throughout the game players are eliminated, disqualifying them for a win.
-  - Players may only rejoin after quitting this minigame, and will become a spectator if leaving the game caused them to be eliminated.
-  - If all but one team is eliminated, that one team wins the game.
-- [ ] Ongoing:
-  - Players can join this game after it started unlike `Queued`.
-  - These types of games may or may not have a win objective.
-  - Players cannot be eliminated, so by default there is no winning (Think of SkyBlock)
-
-For both types of minigames, once a win objective is met, the player/party is rewarded and the game ends.
 
 ## Minigame Win Objectives
 
