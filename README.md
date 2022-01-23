@@ -15,6 +15,7 @@ My aim is to provide you with all the essentials for any minigame server includi
 - [`Project TODOs`](#project-todos) lists features this project plans to add.
   - [`Optimizations`](#optimizations) is a list of TODOs that will makes this project more efficient.
 - [`About`](#about) holds extra information on the core concepts of this plugin
+  - [`Minigame Services`](#minigame-services) details the plugin's service system
   - [`Minigame Win Objectives`](#minigame-win-objectives) talks about win objectives thoroughly
 - [`Contributing and Question Asking`](#contributing-and-question-asking) encourages you to use Github Issues for any problems you have or contributions you plan to make
 
