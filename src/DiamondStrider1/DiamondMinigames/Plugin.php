@@ -30,7 +30,6 @@ class Plugin extends PluginBase
     {
         self::$instance = $this;
         MinigameServices::registerDefaults();
-        CommandManager::init();
 
         $dataFolder = $this->getDataFolder();
         $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
@@ -42,6 +41,7 @@ class Plugin extends PluginBase
 
     protected function onEnable(): void
     {
+        CommandManager::init();
         $this->reloadPlugin();
     }
 
