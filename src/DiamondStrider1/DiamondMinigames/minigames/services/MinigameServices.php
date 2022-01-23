@@ -17,7 +17,7 @@ class MinigameServices
         $plugin = Plugin::getInstance();
         $pm = $plugin->getServer()->getPluginManager();
 
-        self::register(new ServiceInfo(QueueService::class, [QueueConfig::class]));
+        self::register(new ServiceInfo(QueueService::class, QueueConfig::class));
         $pm->registerEvents(new QueueService, $plugin);
     }
 

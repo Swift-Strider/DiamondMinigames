@@ -8,11 +8,11 @@ class ServiceInfo
 {
     /**
      * @phpstan-param class-string $serviceClass
-     * @phpstan-param array<class-string> $configDepends
+     * @phpstan-param class-string $configClass
      */
     public function __construct(
         private string $serviceClass,
-        private array $configDepends,
+        private string $configClass,
     ) {
     }
 
@@ -25,10 +25,10 @@ class ServiceInfo
     }
 
     /**
-     * @phpstan-return array<class-string>
+     * @phpstan-return class-string
      */
-    public function getConfigDepends(): array
+    public function getConfigClass(): string
     {
-        return $this->configDepends;
+        return $this->configClass;
     }
 }
