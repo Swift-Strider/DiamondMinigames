@@ -35,10 +35,10 @@ class Plugin extends PluginBase
     {
         CommandManager::init();
         MinigameServices::registerDefaults();
-        
+
         $dataFolder = $this->getDataFolder();
         $this->mainConfig = new NeoConfig($dataFolder . "config.yml", MainConfig::class);
-        
+
         $regionConfig = new NeoConfig($dataFolder . "regions.yml", RegionConfig::class);
         $worldBackups = new FileStore($dataFolder . "world_backups");
         $this->regionManager = new RegionManager($regionConfig, $worldBackups);
