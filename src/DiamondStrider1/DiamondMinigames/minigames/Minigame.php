@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigames;
 
+use DiamondStrider1\DiamondMinigames\minigames\configs\BaseConfig;
 use DiamondStrider1\DiamondMinigames\minigames\configs\ConfigManager;
 
 class Minigame
@@ -11,7 +12,7 @@ class Minigame
     private ConfigManager $configManager;
 
     /**
-     * @param array<object> $configs
+     * @param array<BaseConfig> $configs
      */
     public function __construct(array $configs)
     {

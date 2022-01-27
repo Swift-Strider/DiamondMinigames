@@ -7,12 +7,12 @@ namespace DiamondStrider1\DiamondMinigames\minigames\configs;
 class ConfigManager
 {
     /**
-     * @var array<string, object> $configs
+     * @var array<string, BaseConfig> $configs
      */
     private array $configs = [];
 
     /**
-     * @param array<object> $configs
+     * @param array<BaseConfig> $configs
      */
     public function __construct(array $configs)
     {
@@ -22,7 +22,7 @@ class ConfigManager
     }
 
     /**
-     * @phpstan-template T of object
+     * @phpstan-template T of BaseConfig
      * @phpstan-param class-string<T> $configClass
      * @phpstan-return T|null
      */
