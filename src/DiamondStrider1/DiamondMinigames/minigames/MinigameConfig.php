@@ -10,4 +10,9 @@ class MinigameConfig
 {
     /** @var BaseConfig[] */
     public array $configs;
+
+    public function instantiate(): Minigame
+    {
+        return new Minigame($this->configs);
+    }
 }
