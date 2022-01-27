@@ -1,4 +1,2 @@
-includes:
-    - phpstan-baseline.neon 
 parameters:
     level: max
