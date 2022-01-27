@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigames\configs;
 
-use DiamondStrider1\DiamondMinigames\data\attributes\IntType;
+use DiamondStrider1\DiamondDatas\attributes\IntType;
 
 class QueueConfig extends BaseConfig
 {

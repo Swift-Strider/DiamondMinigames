@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigames\configs;
 
-use DiamondStrider1\DiamondMinigames\data\metadata\ISubtypeProvider;
+use DiamondStrider1\DiamondDatas\metadata\ISubtypeProvider;
 use DiamondStrider1\DiamondMinigames\minigames\services\MinigameServices;
 
 abstract class BaseConfig implements ISubtypeProvider

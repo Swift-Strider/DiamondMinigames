@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\regions;
 
-use DiamondStrider1\DiamondMinigames\data\attributes\StringType;
-use DiamondStrider1\DiamondMinigames\data\attributes\VectorType;
+use DiamondStrider1\DiamondDatas\attributes\StringType;
+use DiamondStrider1\DiamondDatas\attributes\VectorType;
 use pocketmine\math\Vector3;
 
 class Region

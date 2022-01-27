@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\regions;
 
-use DiamondStrider1\DiamondMinigames\data\attributes\ListType;
-use DiamondStrider1\DiamondMinigames\data\attributes\ObjectType;
-use DiamondStrider1\DiamondMinigames\data\metadata\IDefaultProvider;
+use DiamondStrider1\DiamondDatas\attributes\ListType;
+use DiamondStrider1\DiamondDatas\attributes\ObjectType;
+use DiamondStrider1\DiamondDatas\metadata\IDefaultProvider;
 
 class RegionConfig implements IDefaultProvider
 {

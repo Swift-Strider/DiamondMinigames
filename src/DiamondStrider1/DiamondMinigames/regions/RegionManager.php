@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\regions;
 
-use DiamondStrider1\DiamondMinigames\data\FileStore;
-use DiamondStrider1\DiamondMinigames\data\NeoConfig;
+use DiamondStrider1\DiamondDatas\FileStore;
+use DiamondStrider1\DiamondDatas\NeoConfig;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;

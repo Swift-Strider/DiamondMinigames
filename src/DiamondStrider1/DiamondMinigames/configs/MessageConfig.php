@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\configs;
 
-use DiamondStrider1\DiamondMinigames\data\metadata\IValidationProvider;
-use DiamondStrider1\DiamondMinigames\data\attributes\StringType;
-use DiamondStrider1\DiamondMinigames\data\ConfigContext;
-use DiamondStrider1\DiamondMinigames\data\ConfigException;
+use DiamondStrider1\DiamondDatas\metadata\IValidationProvider;
+use DiamondStrider1\DiamondDatas\attributes\StringType;
+use DiamondStrider1\DiamondDatas\ConfigContext;
+use DiamondStrider1\DiamondDatas\ConfigException;
 use pocketmine\player\Player;
 
 class MessageConfig implements IValidationProvider

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\configs;
 
-use DiamondStrider1\DiamondMinigames\data\metadata\IDefaultProvider;
-use DiamondStrider1\DiamondMinigames\data\attributes\ObjectType;
+use DiamondStrider1\DiamondDatas\metadata\IDefaultProvider;
+use DiamondStrider1\DiamondDatas\attributes\ObjectType;
 
 class MainConfig implements IDefaultProvider
 {
