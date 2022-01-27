@@ -6,7 +6,7 @@ My aim is to provide you with all the essentials for any minigame server includi
 
 <p align="center"><strong>This is a <a href="https://github.com/pmmp/PocketMine-MP"><code>pocketmine v4</code></a> plugin for Minecraft Bedrock Edition.</strong></p>
 
-<p align="center"><strong>Take a look at <a href="#project-todos"><code>Project TODOs</code></a>, and <a href="#about"><code>About</code></a> for information and examples.</strong></p>
+<p align="center"><strong>Take a look at <a href="#project-todos"><code>Project TODOs</code></a> and <a href="#about"><code>About</code></a> for information and examples.</strong></p>
 
 <p align="center"><strong>See <a href="#contributing-and-question-asking"><code>Contributing and Question Asking</code></a> for info on how to contribute and learn about this project.</strong></p>
 
@@ -25,7 +25,7 @@ My aim is to provide you with all the essentials for any minigame server includi
   - [x] Create a region manager to backup and save parts of worlds for minigames
   - [ ] Design a modular minigame system
     - [ ] Support custom win-objectives. See [`Minigame Win Objectives`](#minigame-win-objectives) below.
-    - [ ] Support a service system, where services (eg. `ChestLootService`) depend on one or more configurations (eg. `ChestLootConfig`) to be present on the minigame to bind to it (eg. if `ChestLootConfig` put on the minigame, `ChestLootService` will fill chests with loot according to the schedule provided to `ChestLootConfig`). This will allow 3rd party plugins to easily interop with DiamondMinigames. See [`Minigame Services`](#minigame-services).
+    - [ ] Support a service system, where services (eg. `ChestLootService`) depend on one or more configurations (eg. `ChestLootConfig`) to be present on the minigame to bind to it (eg. if `ChestLootConfig` is put on the minigame, `ChestLootService` will fill chests with loot according to the schedule provided to `ChestLootConfig`). This will allow 3rd party plugins to easily interop with DiamondMinigames. See [`Minigame Services`](#minigame-services).
 
 ## Optimizations
 
@@ -39,7 +39,7 @@ The next sections talk about the core concepts of the DiamondMinigames project.
 
 ## Minigame Services
 
-These are the building blocks of your minigames. Services may do any combinations of adding mechanics (point scoring), win-objectives (win after scoring 50 points), and play-things (a chest, with restocking loot).
+These are the building blocks of your minigames. Services may add any combination of mechanics (point scoring), win-objectives (win after scoring 50 points), and play-things (a chest, with restocking loot).
 
 ## Minigame Win Objectives
 
@@ -47,4 +47,4 @@ DiamondMinigames plans to support a win objective system. This allows you to con
 
 # Contributing and Question Asking
 
-Go create an issue on Github for any concerns you may have, for any bug reports, questions of this plugin/project, or questions about contributing!
+Go create an issue on Github for any concerns, bug reports, questions about this plugin/project, or questions about contributing!
