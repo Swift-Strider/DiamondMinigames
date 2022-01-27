@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DiamondStrider1\DiamondMinigames\minigames\configs;
 
-class ConfigManager
+trait ConfigurableTrait
 {
     /**
      * @var array<string, BaseConfig> $configs
@@ -14,7 +14,7 @@ class ConfigManager
     /**
      * @param array<BaseConfig> $configs
      */
-    public function __construct(array $configs)
+    private function useConfigs(array $configs): void
     {
         foreach ($configs as $conf) {
             $this->configs[get_class($conf)] = $conf;
@@ -26,7 +26,7 @@ class ConfigManager
      * @phpstan-param class-string<T> $configClass
      * @phpstan-return T|null
      */
-    public function get(string $configClass): ?object
+    private function requireConfig(string $configClass): ?object
     {
         /** @phpstan-ignore-next-line */
         return $this->configs[$configClass] ?? null;
